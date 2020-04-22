@@ -31,7 +31,8 @@ namespace _2_ConsoleClientGetAccountDetails
             Console.WriteLine(consentToken);
 
             var client = new HttpClient();
-            var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts/5a59028c-e757-4f22-b88c-3ba90573383c");
+            var accountId = "5a59028c-e757-4f22-b88c-3ba90573383c";
+            var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts/{accountId}");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);

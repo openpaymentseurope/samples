@@ -20,7 +20,6 @@ namespace Shared
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
                     new KeyValuePair<string, string>("scope", scope),
                 }));
-
             var json = await response.Content.ReadAsStringAsync();
             var obj = JsonConvert.DeserializeObject<JObject>(json);
             
