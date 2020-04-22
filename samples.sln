@@ -1,25 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspsp", "Aspsp", "{336846BB-41D0-4541-AD32-E21E02AD98AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleClientGetToken", "Aspsp\1_ConsoleClientGetToken\1_ConsoleClientGetToken.csproj", "{AAD4E9BB-2DB7-4316-8291-B171B7CBE8B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientGetToken", "Aspsp\1_ConsoleClientGetToken\1_ConsoleClientGetToken.csproj", "{AAD4E9BB-2DB7-4316-8291-B171B7CBE8B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientCountriesList", "Aspsp\2_ConsoleClientCountriesList\2_ConsoleClientCountriesList.csproj", "{31480EF3-4474-4E61-A510-17EC3E35EEC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2_ConsoleClientCountriesList", "Aspsp\2_ConsoleClientCountriesList\2_ConsoleClientCountriesList.csproj", "{31480EF3-4474-4E61-A510-17EC3E35EEC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ConsoleClientCountriesDetails", "Aspsp\3_ConsoleClientCountriesDetails\3_ConsoleClientCountriesDetails.csproj", "{B6E82BDB-B271-465E-BAD2-21ABE7E62145}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_ConsoleClientCountriesDetails", "Aspsp\3_ConsoleClientCountriesDetails\3_ConsoleClientCountriesDetails.csproj", "{B6E82BDB-B271-465E-BAD2-21ABE7E62145}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_ConsoleClientCitiesList", "Aspsp\4_ConsoleClientCitiesList\4_ConsoleClientCitiesList.csproj", "{8253FC84-446C-4F78-9B42-F1559E76E586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4_ConsoleClientCitiesList", "Aspsp\4_ConsoleClientCitiesList\4_ConsoleClientCitiesList.csproj", "{8253FC84-446C-4F78-9B42-F1559E76E586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5_ConsoleClientAspspDetails", "Aspsp\5_ConsoleClientAspspDetails\5_ConsoleClientAspspDetails.csproj", "{1D7DE5ED-4E7D-4099-861B-76CB67DAB81A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "5_ConsoleClientAspspDetails", "Aspsp\5_ConsoleClientAspspDetails\5_ConsoleClientAspspDetails.csproj", "{1D7DE5ED-4E7D-4099-861B-76CB67DAB81A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6_ConsoleClientAspspList", "Aspsp\6_ConsoleClientAspspList\6_ConsoleClientAspspList.csproj", "{B941DB8A-D0BE-423D-B78F-460B9D3B9222}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6_ConsoleClientAspspList", "Aspsp\6_ConsoleClientAspspList\6_ConsoleClientAspspList.csproj", "{B941DB8A-D0BE-423D-B78F-460B9D3B9222}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7_ConsoleClientCitiesDetails", "Aspsp\7_ConsoleClientCitiesDetails\7_ConsoleClientCitiesDetails.csproj", "{87066EEF-8B88-4187-AF1B-1B3CD01A9D98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "7_ConsoleClientCitiesDetails", "Aspsp\7_ConsoleClientCitiesDetails\7_ConsoleClientCitiesDetails.csproj", "{87066EEF-8B88-4187-AF1B-1B3CD01A9D98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{910BA9CB-624C-4CFE-B27B-A370E356AFF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{910BA9CB-624C-4CFE-B27B-A370E356AFF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleCreateConsent", "Consent\1_ConsoleCreateConsent\1_ConsoleCreateConsent.csproj", "{584B0DB5-7430-4404-9335-D2F81E05E455}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consent", "Consent", "{4E5B7E28-D524-4165-8484-483CF197DFA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,9 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AAD4E9BB-2DB7-4316-8291-B171B7CBE8B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -130,6 +131,21 @@ Global
 		{910BA9CB-624C-4CFE-B27B-A370E356AFF2}.Release|x64.Build.0 = Release|Any CPU
 		{910BA9CB-624C-4CFE-B27B-A370E356AFF2}.Release|x86.ActiveCfg = Release|Any CPU
 		{910BA9CB-624C-4CFE-B27B-A370E356AFF2}.Release|x86.Build.0 = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|x64.Build.0 = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Debug|x86.Build.0 = Debug|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|x64.ActiveCfg = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|x64.Build.0 = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|x86.ActiveCfg = Release|Any CPU
+		{584B0DB5-7430-4404-9335-D2F81E05E455}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AAD4E9BB-2DB7-4316-8291-B171B7CBE8B7} = {336846BB-41D0-4541-AD32-E21E02AD98AA}
@@ -139,5 +155,9 @@ Global
 		{1D7DE5ED-4E7D-4099-861B-76CB67DAB81A} = {336846BB-41D0-4541-AD32-E21E02AD98AA}
 		{B941DB8A-D0BE-423D-B78F-460B9D3B9222} = {336846BB-41D0-4541-AD32-E21E02AD98AA}
 		{87066EEF-8B88-4187-AF1B-1B3CD01A9D98} = {336846BB-41D0-4541-AD32-E21E02AD98AA}
+		{584B0DB5-7430-4404-9335-D2F81E05E455} = {4E5B7E28-D524-4165-8484-483CF197DFA0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC58A5F5-1909-4128-89C6-490A9A157BD7}
 	EndGlobalSection
 EndGlobal
