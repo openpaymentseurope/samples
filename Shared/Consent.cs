@@ -30,7 +30,7 @@ namespace Shared
                 validUntil = DateTime.Now.AddDays(4).ToString("yyyy-MM-dd"),
                 frequencyPerDay = 500,
                 combinedServiceIndicator = true
-            }, Formatting.Indented);
+            });
 
             var response = await client.PostAsync(uri, new StringContent(jsonObj, Encoding.UTF8, "application/json"));
             var json = await response.Content.ReadAsStringAsync();
@@ -72,7 +72,7 @@ namespace Shared
             var jsonObj = JsonConvert.SerializeObject(new
             {
                 authenticationMethodId = "mbid",
-            }, Formatting.Indented);
+            });
 
             var response = await client.PutAsync(uri, new StringContent(jsonObj, Encoding.UTF8, "application/json"));
             var json = await response.Content.ReadAsStringAsync();
