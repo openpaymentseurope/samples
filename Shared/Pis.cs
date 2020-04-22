@@ -53,11 +53,11 @@ namespace Shared
             return obj.GetValue("paymentId").Value<string>();            
         }
 
-        public static async Task<(string authorisationId, string authenticationMethodId)> StartPaymentInitiationAuthorisationProcess(string paymentToken)
+        public static async Task<(string authorisationId, string authenticationMethodId)>
+            StartPaymentInitiationAuthorisationProcess(string paymentToken, string paymentId)
         {
             var client = new HttpClient();
             var paymentProduct = "domestic";
-            var paymentId = await CreatePaymentInitiation(paymentToken);
             var uri = new Uri($"{Settings.ApiUrl}/psd2/paymentinitiation/v1/payments/{paymentProduct}/{paymentId}/authorisations");
             
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", paymentToken);

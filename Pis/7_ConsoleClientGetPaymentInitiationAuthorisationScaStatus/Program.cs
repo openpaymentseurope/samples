@@ -15,7 +15,7 @@ namespace _7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus
             var client = new HttpClient();
             var paymentProduct = "domestic";
             var paymentId = await Pis.CreatePaymentInitiation(paymentToken);
-            var authorisationId = await Pis.StartPaymentInitiationAuthorisationProcess(paymentToken);
+            var (authorisationId, authenticationMethodId) = await Pis.StartPaymentInitiationAuthorisationProcess(paymentToken, paymentId);
             var uri = new Uri($"{Settings.ApiUrl}/psd2/paymentinitiation/v1/payments/{paymentProduct}/{paymentId}/authorisations/{authorisationId}");
             
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", paymentToken);
