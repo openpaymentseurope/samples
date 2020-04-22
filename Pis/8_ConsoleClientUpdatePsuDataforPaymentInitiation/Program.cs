@@ -12,7 +12,6 @@ namespace _8_ConsoleClientUpdatePsuDataforPaymentInitiation
     {
         static async Task Main(string[] args)
         {
-            // Vi får inte tillbaka något från anropet
             var paymentToken = await Aspsp.GetToken("paymentinitiation");
             var client = new HttpClient();
             var paymentProduct = "domestic";
@@ -22,7 +21,7 @@ namespace _8_ConsoleClientUpdatePsuDataforPaymentInitiation
             
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", paymentToken);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", "ESSESESS");
+            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             var message = new

@@ -39,7 +39,7 @@ namespace _4_ConsoleClientGetTransactionList
             // 0baa5eb2-ab08-4e7a-b662-16a238200453//
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", "ESSESESS");
+            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.DefaultRequestHeaders.Add("Consent-ID", consentId);

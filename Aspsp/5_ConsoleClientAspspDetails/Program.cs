@@ -12,7 +12,7 @@ namespace ConsoleClientAspspDetails
         {
             var token = await Aspsp.GetToken("aspspinformation");
             var client = new HttpClient();
-            var aspspCode = "ESSESESS";
+            var aspspCode = Settings.BicFi;
             var uri = new Uri($"{Settings.ApiUrl}/psd2/aspspinformation/v1/aspsps/{aspspCode}");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());

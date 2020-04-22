@@ -19,7 +19,7 @@ namespace _7_ConsoleClientGetConsentAuthorisationScaStatus
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", "ESSESESS");
+            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
 
