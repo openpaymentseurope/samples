@@ -9,7 +9,7 @@ namespace Shared
 {
     public class Aspsp
     {
-        public static async Task<string> GetToken()
+        public static async Task<string> GetToken(string scope = "aspspinformation")
         {
             var client = new HttpClient();
             var uri = new Uri($"{Settings.AuthUrl}/connect/token");
@@ -18,7 +18,7 @@ namespace Shared
                     new KeyValuePair<string, string>("client_id", Settings.ClientId),
                     new KeyValuePair<string, string>("client_secret", Settings.Secret),
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("scope", "aspspinformation"),
+                    new KeyValuePair<string, string>("scope", scope),
                 }));
 
             var json = await response.Content.ReadAsStringAsync();
