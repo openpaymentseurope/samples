@@ -29,9 +29,8 @@ namespace _3_ConsoleClientGetBalances
             var consentToken = await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
             
             Console.WriteLine(consentToken);
-
             var client = new HttpClient();
-            var accountId = "5a59028c-e757-4f22-b88c-3ba90573383c";
+            var accountId = "150563bd-7b73-4355-9fe7-0a36d5f08cf0";
             var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts/{accountId}/balances");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

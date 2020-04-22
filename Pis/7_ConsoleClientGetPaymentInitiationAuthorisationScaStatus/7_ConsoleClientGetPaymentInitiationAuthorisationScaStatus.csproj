@@ -6,4 +6,8 @@
     <RootNamespace>_7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj" />
+  </ItemGroup>
+
 </Project>

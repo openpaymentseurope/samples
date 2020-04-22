@@ -6,4 +6,8 @@
     <RootNamespace>_3_ConsoleClientCancelPaymentInitiation</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj" />
+  </ItemGroup>
+
 </Project>

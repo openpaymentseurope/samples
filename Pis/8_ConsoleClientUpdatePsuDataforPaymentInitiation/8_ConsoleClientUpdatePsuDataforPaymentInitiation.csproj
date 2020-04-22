@@ -6,4 +6,8 @@
     <RootNamespace>_8_ConsoleClientUpdatePsuDataforPaymentInitiation</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj" />
+  </ItemGroup>
+
 </Project>

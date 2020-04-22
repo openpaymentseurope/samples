@@ -6,4 +6,8 @@
     <RootNamespace>_5_ConsoleClientStartPaymentInitiationAuthorisationProcess</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Shared\Shared.csproj" />
+  </ItemGroup>
+
 </Project>
