@@ -12,8 +12,7 @@ namespace ConsoleClientGetToken
         {
             var client = new HttpClient();
             var uri = new Uri($"{Settings.AuthUrl}/connect/token");
-            var response = await client.PostAsync(uri, new FormUrlEncodedContent(
-                new List<KeyValuePair<string, string>>
+            var response = await client.PostAsync(uri, new FormUrlEncodedContent(new []
                 {
                     new KeyValuePair<string, string>("client_id", Settings.ClientId),
                     new KeyValuePair<string, string>("client_secret", Settings.Secret),
