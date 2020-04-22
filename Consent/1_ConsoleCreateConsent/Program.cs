@@ -27,12 +27,9 @@ namespace _1_ConsoleCreateConsent
             {
                 access = new
                 {
-                    accounts = new List<object>(),
-                    balances = new List<object>(),
-                    transactions = new List<object>(),
                 },
                 recurringIndicator = true,
-                validUntil = "2020-04-30",
+                validUntil = DateTime.Now.AddDays(4).ToString("yyyy-MM-dd"),
                 frequencyPerDay = 500,
                 combinedServiceIndicator = true
             }, Formatting.Indented);
