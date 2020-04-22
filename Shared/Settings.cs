@@ -9,5 +9,6 @@ namespace Shared
         public static string AuthUrl => "https://auth.sandbox.openbankingplatform.com";
         public static string ApiUrl => "https://api.sandbox.openbankingplatform.com";
         public static string IpAddress => "83.226.130.89";
+        public static string RedirectUrl => "https://example.com/";
     }
 }
