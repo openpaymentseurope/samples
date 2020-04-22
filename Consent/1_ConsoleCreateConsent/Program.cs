@@ -18,16 +18,14 @@ namespace _1_ConsoleCreateConsent
             var uri = new Uri($"{Settings.ApiUrl}/psd2/consent/v1/consents");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            client.DefaultRequestHeaders.Add("PSU-IP-Address", "83.226.130.89");
+            client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
             client.DefaultRequestHeaders.Add("X-BicFi", "ESSESESS");
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
 
             var jsonObj = JsonConvert.SerializeObject(new
             {
-                access = new
-                {
-                },
+                access = new {},
                 recurringIndicator = true,
                 validUntil = DateTime.Now.AddDays(4).ToString("yyyy-MM-dd"),
                 frequencyPerDay = 500,

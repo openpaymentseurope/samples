@@ -10,7 +10,7 @@ namespace ConsoleClientListCountries
     {
         static async Task Main(string[] args)
         {
-            var token = await Aspsp.GetToken();
+            var token = await Aspsp.GetToken("aspspinformation");
             var client = new HttpClient();
             var uri = new Uri($"{Settings.ApiUrl}/psd2/aspspinformation/v1/countries");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

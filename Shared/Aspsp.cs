@@ -9,7 +9,7 @@ namespace Shared
 {
     public class Aspsp
     {
-        public static async Task<string> GetToken(string scope = "aspspinformation")
+        public static async Task<string> GetToken(string scope)
         {
             var client = new HttpClient();
             var uri = new Uri($"{Settings.AuthUrl}/connect/token");

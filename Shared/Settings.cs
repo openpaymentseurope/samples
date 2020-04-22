@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Shared
 {
     public static class Settings
@@ -6,5 +8,6 @@ namespace Shared
         public static string Secret => "5QiawYhFLmObm5A5S3x6hG1RG6yLQIbZw/zTy0PIyuQ=";
         public static string AuthUrl => "https://auth.sandbox.openbankingplatform.com";
         public static string ApiUrl => "https://api.sandbox.openbankingplatform.com";
+        public static string IpAddress => "83.226.130.89";
     }
 }
