@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,14 +13,14 @@ namespace Shared
 {
     public class Consent
     {
-        public static async Task<string> CreateConsent(string token)
+        public static async Task<string> CreateConsent(string token, string bicFi)
         {
             var client = new HttpClient();
             var uri = new Uri($"{Settings.ApiUrl}/psd2/consent/v1/consents");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
+            client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
 
@@ -39,16 +40,26 @@ namespace Shared
             return obj.GetValue("consentId").Value<string>();
         }
 
-        public static async Task<string> StartConsentAuthorisationProcess(string token, string consentId)
+        public static async Task<string> CreateConsent(string token)
+        {
+            return await CreateConsent(token, Settings.BicFi);
+        }
+
+        public static async Task<string> StartConsentAuthorisationProcess(string token, string consentId, string bicFi, string psuId)
         {
             var client = new HttpClient();
             var uri = new Uri($"{Settings.ApiUrl}/psd2/consent/v1/consents/{consentId}/authorisations");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
+            client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
+
+            if (!string.IsNullOrWhiteSpace(psuId))
+            {
+                client.DefaultRequestHeaders.Add("PSU-ID", psuId);
+            }
 
             var response = await client.PostAsync(uri, new StringContent("", Encoding.UTF8, "application/json"));
 
@@ -56,6 +67,37 @@ namespace Shared
             var obj = JsonConvert.DeserializeObject<JObject>(json);
 
             return obj.GetValue("authorisationId").Value<string>();
+        }
+
+        public static async Task<string> StartConsentAuthorisationProcess(string token, string consentId)
+        {
+            return await StartConsentAuthorisationProcess(token, consentId, Settings.BicFi, null);
+        }
+
+        public static async Task<string> UpdatePsuDataForConsent(string token, string consentId, string consentAuthorisationId, string bicFi)
+        {
+            var client = new HttpClient();
+            var uri = new Uri($"{Settings.ApiUrl}/psd2/consent/v1/consents/{consentId}/authorisations/{consentAuthorisationId}");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
+            client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
+            client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            client.DefaultRequestHeaders.Add("Accept", "*/*");
+
+            var jsonObj = JsonConvert.SerializeObject(new
+            {
+                authenticationMethodId = "mbid",
+            });
+
+            var response = await client.PutAsync(uri, new StringContent(jsonObj, Encoding.UTF8, "application/json"));
+            var json = await response.Content.ReadAsStringAsync();
+
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
+
+            var url = obj["challengeData"]["data"].Select(d => d.Value<string>()).First();
+
+            return url;
         }
 
         public static async Task<string> UpdatePsuDataForConsent(string token, string consentId, string consentAuthorisationId)

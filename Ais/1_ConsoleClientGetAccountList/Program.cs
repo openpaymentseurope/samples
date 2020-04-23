@@ -11,21 +11,22 @@ namespace _1_ConsoleClientGetAccountList
         static async Task Main(string[] args)
         {
             var token = await Aspsp.GetToken("accountinformation");
-            var consentId = await Consent.CreateConsent(token);
-            var consentAuthorisationId = await Consent.StartConsentAuthorisationProcess(token, consentId);
-            var url = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId);
+            var bicFi = "NDEASESS";
+            var consentId = await Consent.CreateConsent(token, bicFi);
+            var consentAuthorisationId = await Consent.StartConsentAuthorisationProcess(token, consentId, bicFi, "199311219639");
+            var url = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId, bicFi);
 
-            Console.WriteLine(url);
-            Console.Write("Code: ");
+            //Console.WriteLine(url);
+            //Console.Write("Code: ");
 
-            var code = Console.ReadLine();
-            var consentToken =  await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
+            //var code = Console.ReadLine();
+            var consentToken =  await Consent.GetToken("accountinformation", url, consentId, consentAuthorisationId);
             var client = new HttpClient();
             var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
-            client.DefaultRequestHeaders.Add("X-BicFi", Settings.BicFi);
+            client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
             client.DefaultRequestHeaders.Add("Consent-ID", consentId);

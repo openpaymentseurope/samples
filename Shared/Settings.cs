@@ -14,3 +14,4 @@ namespace Shared
         public static string CertificateFile => "";
         public static string CertificatePassword => "";
     }
+}
