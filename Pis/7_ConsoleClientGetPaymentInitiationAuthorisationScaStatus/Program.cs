@@ -10,7 +10,6 @@ namespace _7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus
     {
         static async Task Main(string[] args)
         {
-            // Vi får inte tillbaka något från anropet
             var paymentToken = await Aspsp.GetToken("paymentinitiation");
             var client = new HttpClient();
             var paymentProduct = "domestic";
