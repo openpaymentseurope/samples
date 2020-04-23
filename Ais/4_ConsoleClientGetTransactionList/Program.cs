@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace _4_ConsoleClientGetTransactionList
             var code = Console.ReadLine();
             var consentToken = await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
             var client = new HttpClient();
-            var accountId = Settings.AccountId;
+            var accountId = (await Ais.GetAccountList(token, consentId)).First();
             var bookingStatus = "both";
             var dateFrom = new DateTime(2019, 1, 1).ToString("yyyy-MM-dd");
             var uri = new Uri(

@@ -5,69 +5,75 @@ VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ais", "Ais", "{E296BA27-631E-4A85-96BC-61E909568274}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleClientGetAccountList", "Ais\1_ConsoleClientGetAccountList\1_ConsoleClientGetAccountList.csproj", "{CBD92CFF-0D8A-4BF3-8955-A46CA0ED80C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientGetAccountList", "Ais\1_ConsoleClientGetAccountList\1_ConsoleClientGetAccountList.csproj", "{CBD92CFF-0D8A-4BF3-8955-A46CA0ED80C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientGetAccountDetails", "Ais\2_ConsoleClientGetAccountDetails\2_ConsoleClientGetAccountDetails.csproj", "{B717F7D1-85E8-4EE1-8277-197B69BA16AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2_ConsoleClientGetAccountDetails", "Ais\2_ConsoleClientGetAccountDetails\2_ConsoleClientGetAccountDetails.csproj", "{B717F7D1-85E8-4EE1-8277-197B69BA16AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ConsoleClientGetBalances", "Ais\3_ConsoleClientGetBalances\3_ConsoleClientGetBalances.csproj", "{F49E0384-24FB-4502-95A7-1A9C28C111DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_ConsoleClientGetBalances", "Ais\3_ConsoleClientGetBalances\3_ConsoleClientGetBalances.csproj", "{F49E0384-24FB-4502-95A7-1A9C28C111DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_ConsoleClientGetTransactionList", "Ais\4_ConsoleClientGetTransactionList\4_ConsoleClientGetTransactionList.csproj", "{3CB5B46B-19E0-444A-ACB8-60210A3A3FFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4_ConsoleClientGetTransactionList", "Ais\4_ConsoleClientGetTransactionList\4_ConsoleClientGetTransactionList.csproj", "{3CB5B46B-19E0-444A-ACB8-60210A3A3FFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5_ConsoleClientGetTransactionDetails", "Ais\5_ConsoleClientGetTransactionDetails\5_ConsoleClientGetTransactionDetails.csproj", "{5F9D817F-B78F-40D4-BAA5-A29E56366143}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "5_ConsoleClientGetTransactionDetails", "Ais\5_ConsoleClientGetTransactionDetails\5_ConsoleClientGetTransactionDetails.csproj", "{5F9D817F-B78F-40D4-BAA5-A29E56366143}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aspsp", "Aspsp", "{9CBB4DF2-E072-41C2-B9F4-D69BC3973135}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleClientGetToken", "Aspsp\1_ConsoleClientGetToken\1_ConsoleClientGetToken.csproj", "{77429AFD-DEB6-4539-ACA8-24C9788187B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientGetToken", "Aspsp\1_ConsoleClientGetToken\1_ConsoleClientGetToken.csproj", "{77429AFD-DEB6-4539-ACA8-24C9788187B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientCountriesList", "Aspsp\2_ConsoleClientCountriesList\2_ConsoleClientCountriesList.csproj", "{4A6D57A5-CB64-4F9A-BFB9-A17C518DFD18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2_ConsoleClientCountriesList", "Aspsp\2_ConsoleClientCountriesList\2_ConsoleClientCountriesList.csproj", "{4A6D57A5-CB64-4F9A-BFB9-A17C518DFD18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ConsoleClientCountriesDetails", "Aspsp\3_ConsoleClientCountriesDetails\3_ConsoleClientCountriesDetails.csproj", "{1D187419-9128-4B23-9009-7CFF17D5DC82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_ConsoleClientCountriesDetails", "Aspsp\3_ConsoleClientCountriesDetails\3_ConsoleClientCountriesDetails.csproj", "{1D187419-9128-4B23-9009-7CFF17D5DC82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_ConsoleClientCitiesList", "Aspsp\4_ConsoleClientCitiesList\4_ConsoleClientCitiesList.csproj", "{E1657D9F-1A45-4BC6-B6B8-322568AAF56A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4_ConsoleClientCitiesList", "Aspsp\4_ConsoleClientCitiesList\4_ConsoleClientCitiesList.csproj", "{E1657D9F-1A45-4BC6-B6B8-322568AAF56A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5_ConsoleClientAspspDetails", "Aspsp\5_ConsoleClientAspspDetails\5_ConsoleClientAspspDetails.csproj", "{60537344-E651-4CA4-94B8-E0046303684F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "5_ConsoleClientAspspDetails", "Aspsp\5_ConsoleClientAspspDetails\5_ConsoleClientAspspDetails.csproj", "{60537344-E651-4CA4-94B8-E0046303684F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6_ConsoleClientAspspList", "Aspsp\6_ConsoleClientAspspList\6_ConsoleClientAspspList.csproj", "{6C5AE7D4-1901-4C68-85B4-A86D53D01BA5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6_ConsoleClientAspspList", "Aspsp\6_ConsoleClientAspspList\6_ConsoleClientAspspList.csproj", "{6C5AE7D4-1901-4C68-85B4-A86D53D01BA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7_ConsoleClientCitiesDetails", "Aspsp\7_ConsoleClientCitiesDetails\7_ConsoleClientCitiesDetails.csproj", "{878CE825-E79C-4C00-8375-6553F883A1E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "7_ConsoleClientCitiesDetails", "Aspsp\7_ConsoleClientCitiesDetails\7_ConsoleClientCitiesDetails.csproj", "{878CE825-E79C-4C00-8375-6553F883A1E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consent", "Consent", "{C0B2121A-F31C-4767-A23A-40C330DF2F13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientGetConsent", "Consent\2_ConsoleClientGetConsent\2_ConsoleClientGetConsent.csproj", "{8D8D1ED5-C627-4882-AB77-D6196D3141B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2_ConsoleClientGetConsent", "Consent\2_ConsoleClientGetConsent\2_ConsoleClientGetConsent.csproj", "{8D8D1ED5-C627-4882-AB77-D6196D3141B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ConsoleClientDeleteConsent", "Consent\3_ConsoleClientDeleteConsent\3_ConsoleClientDeleteConsent.csproj", "{E78BFA40-1909-4E82-B055-0BAAA2902065}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_ConsoleClientDeleteConsent", "Consent\3_ConsoleClientDeleteConsent\3_ConsoleClientDeleteConsent.csproj", "{E78BFA40-1909-4E82-B055-0BAAA2902065}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_ConsoleClientGetConsentStatus", "Consent\4_ConsoleClientGetConsentStatus\4_ConsoleClientGetConsentStatus.csproj", "{84050159-0094-426B-A7AC-1007598E7E6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4_ConsoleClientGetConsentStatus", "Consent\4_ConsoleClientGetConsentStatus\4_ConsoleClientGetConsentStatus.csproj", "{84050159-0094-426B-A7AC-1007598E7E6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5_ConsoleClientStartConsentAuthorisationProcess", "Consent\5_ConsoleClientStartConsentAuthorisationProcess\5_ConsoleClientStartConsentAuthorisationProcess.csproj", "{7E89365E-A741-4E9B-B089-891393723A4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "5_ConsoleClientStartConsentAuthorisationProcess", "Consent\5_ConsoleClientStartConsentAuthorisationProcess\5_ConsoleClientStartConsentAuthorisationProcess.csproj", "{7E89365E-A741-4E9B-B089-891393723A4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6_ConsoleClientGetConsentAuthorisationSubResources", "Consent\6_ConsoleClientGetConsentAuthorisationSubResources\6_ConsoleClientGetConsentAuthorisationSubResources.csproj", "{68DC27B3-B78A-45FE-A195-58624F238932}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6_ConsoleClientGetConsentAuthorisationSubResources", "Consent\6_ConsoleClientGetConsentAuthorisationSubResources\6_ConsoleClientGetConsentAuthorisationSubResources.csproj", "{68DC27B3-B78A-45FE-A195-58624F238932}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7_ConsoleClientGetConsentAuthorisationScaStatus", "Consent\7_ConsoleClientGetConsentAuthorisationScaStatus\7_ConsoleClientGetConsentAuthorisationScaStatus.csproj", "{736435F2-8AFA-43F9-AB65-94C01EA70239}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "7_ConsoleClientGetConsentAuthorisationScaStatus", "Consent\7_ConsoleClientGetConsentAuthorisationScaStatus\7_ConsoleClientGetConsentAuthorisationScaStatus.csproj", "{736435F2-8AFA-43F9-AB65-94C01EA70239}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "8_ConsoleClientUpdatePsuDataForConsent", "Consent\8_ConsoleClientUpdatePsuDataForConsent\8_ConsoleClientUpdatePsuDataForConsent.csproj", "{DEE6C1B9-0593-4EEE-B088-85BD8E366DD9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "8_ConsoleClientUpdatePsuDataForConsent", "Consent\8_ConsoleClientUpdatePsuDataForConsent\8_ConsoleClientUpdatePsuDataForConsent.csproj", "{DEE6C1B9-0593-4EEE-B088-85BD8E366DD9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pis", "Pis", "{33853269-75FD-4655-BF7C-9442A0CB1954}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{17F9C76D-33A2-489F-ABF9-B860E4C1BEA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{17F9C76D-33A2-489F-ABF9-B860E4C1BEA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleClientCreatePaymentInitiation", "Pis\1_ConsoleClientCreatePaymentInitiation\1_ConsoleClientCreatePaymentInitiation.csproj", "{FA07FDF0-752E-4727-A674-2FC47413A2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientCreatePaymentInitiation", "Pis\1_ConsoleClientCreatePaymentInitiation\1_ConsoleClientCreatePaymentInitiation.csproj", "{FA07FDF0-752E-4727-A674-2FC47413A2D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientGetPaymentInitiation", "Pis\2_ConsoleClientGetPaymentInitiation\2_ConsoleClientGetPaymentInitiation.csproj", "{5613B43D-BD84-490F-97D8-8E2750BF8435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "2_ConsoleClientGetPaymentInitiation", "Pis\2_ConsoleClientGetPaymentInitiation\2_ConsoleClientGetPaymentInitiation.csproj", "{5613B43D-BD84-490F-97D8-8E2750BF8435}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3_ConsoleClientCancelPaymentInitiation", "Pis\3_ConsoleClientCancelPaymentInitiation\3_ConsoleClientCancelPaymentInitiation.csproj", "{5EADB37F-B4D4-4465-8087-F0A71DE6D429}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "3_ConsoleClientCancelPaymentInitiation", "Pis\3_ConsoleClientCancelPaymentInitiation\3_ConsoleClientCancelPaymentInitiation.csproj", "{5EADB37F-B4D4-4465-8087-F0A71DE6D429}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "4_ConsoleClientGetPaymentInitiationStatus", "Pis\4_ConsoleClientGetPaymentInitiationStatus\4_ConsoleClientGetPaymentInitiationStatus.csproj", "{2D3E7987-5287-4697-BFA9-639361DA456F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "4_ConsoleClientGetPaymentInitiationStatus", "Pis\4_ConsoleClientGetPaymentInitiationStatus\4_ConsoleClientGetPaymentInitiationStatus.csproj", "{2D3E7987-5287-4697-BFA9-639361DA456F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "5_ConsoleClientStartPaymentInitiationAuthorisationProcess", "Pis\5_ConsoleClientStartPaymentInitiationAuthorisationProcess\5_ConsoleClientStartPaymentInitiationAuthorisationProcess.csproj", "{79F23DB9-6008-4FF3-A2F1-1531EBB26C10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "5_ConsoleClientStartPaymentInitiationAuthorisationProcess", "Pis\5_ConsoleClientStartPaymentInitiationAuthorisationProcess\5_ConsoleClientStartPaymentInitiationAuthorisationProcess.csproj", "{79F23DB9-6008-4FF3-A2F1-1531EBB26C10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "8_ConsoleClientUpdatePsuDataforPaymentInitiation", "Pis\8_ConsoleClientUpdatePsuDataforPaymentInitiation\8_ConsoleClientUpdatePsuDataforPaymentInitiation.csproj", "{2CFADDD4-7A2F-44A4-8E30-63EA44F11C15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "8_ConsoleClientUpdatePsuDataforPaymentInitiation", "Pis\8_ConsoleClientUpdatePsuDataforPaymentInitiation\8_ConsoleClientUpdatePsuDataforPaymentInitiation.csproj", "{2CFADDD4-7A2F-44A4-8E30-63EA44F11C15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6_ConsoleClientGetPaymentInitiationAuthorisationSubResources", "Pis\6_ConsoleClientGetPaymentInitiationAuthorisationSubResources\6_ConsoleClientGetPaymentInitiationAuthorisationSubResources.csproj", "{B17A0EAE-29BF-419B-A006-59A9D7AA2BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6_ConsoleClientGetPaymentInitiationAuthorisationSubResources", "Pis\6_ConsoleClientGetPaymentInitiationAuthorisationSubResources\6_ConsoleClientGetPaymentInitiationAuthorisationSubResources.csproj", "{B17A0EAE-29BF-419B-A006-59A9D7AA2BB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus", "Pis\7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus\7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus.csproj", "{BCDBAC0D-2D84-4046-8F9D-064B3C4BD5A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus", "Pis\7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus\7_ConsoleClientGetPaymentInitiationAuthorisationScaStatus.csproj", "{BCDBAC0D-2D84-4046-8F9D-064B3C4BD5A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "1_ConsoleClientCreateConsent", "Consent\1_ConsoleClientCreateConsent\1_ConsoleClientCreateConsent.csproj", "{2362DC22-6D30-4E83-B8E5-579094FCBD8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientCreateConsent", "Consent\1_ConsoleClientCreateConsent\1_ConsoleClientCreateConsent.csproj", "{2362DC22-6D30-4E83-B8E5-579094FCBD8D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Payments", "Payments", "{F3E01629-64EA-4A9F-B801-0D63661887E6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "1_ConsoleClientSepaPaymentInitiation", "Pis\Payments\1_ConsoleClientSepaPaymentInitiation\1_ConsoleClientSepaPaymentInitiation.csproj", "{F8530539-90C6-4040-ABB4-C75871BE7687}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2_ConsoleClientInternationalPaymentInitiation", "Pis\Payments\2_ConsoleClientInternationalPaymentInitiation\2_ConsoleClientInternationalPaymentInitiation.csproj", "{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -427,12 +433,33 @@ Global
 		{2362DC22-6D30-4E83-B8E5-579094FCBD8D}.Release|x64.Build.0 = Release|Any CPU
 		{2362DC22-6D30-4E83-B8E5-579094FCBD8D}.Release|x86.ActiveCfg = Release|Any CPU
 		{2362DC22-6D30-4E83-B8E5-579094FCBD8D}.Release|x86.Build.0 = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|x64.Build.0 = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Debug|x86.Build.0 = Debug|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|x64.ActiveCfg = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|x64.Build.0 = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|x86.ActiveCfg = Release|Any CPU
+		{F8530539-90C6-4040-ABB4-C75871BE7687}.Release|x86.Build.0 = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|x64.Build.0 = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Debug|x86.Build.0 = Debug|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|x64.ActiveCfg = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|x64.Build.0 = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|x86.ActiveCfg = Release|Any CPU
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {DC58A5F5-1909-4128-89C6-490A9A157BD7}
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CBD92CFF-0D8A-4BF3-8955-A46CA0ED80C9} = {E296BA27-631E-4A85-96BC-61E909568274}
@@ -463,5 +490,11 @@ Global
 		{B17A0EAE-29BF-419B-A006-59A9D7AA2BB8} = {33853269-75FD-4655-BF7C-9442A0CB1954}
 		{BCDBAC0D-2D84-4046-8F9D-064B3C4BD5A1} = {33853269-75FD-4655-BF7C-9442A0CB1954}
 		{2362DC22-6D30-4E83-B8E5-579094FCBD8D} = {C0B2121A-F31C-4767-A23A-40C330DF2F13}
+		{F3E01629-64EA-4A9F-B801-0D63661887E6} = {33853269-75FD-4655-BF7C-9442A0CB1954}
+		{F8530539-90C6-4040-ABB4-C75871BE7687} = {F3E01629-64EA-4A9F-B801-0D63661887E6}
+		{7878DDC3-D5FD-4598-AD3A-D929B5C3E1EF} = {F3E01629-64EA-4A9F-B801-0D63661887E6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC58A5F5-1909-4128-89C6-490A9A157BD7}
 	EndGlobalSection
 EndGlobal

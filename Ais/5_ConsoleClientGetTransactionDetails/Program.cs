@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -21,8 +22,9 @@ namespace _5_ConsoleClientGetTransactionDetails
             var code = Console.ReadLine();
             var consentToken = await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
             var client = new HttpClient();
-            var accountId = Settings.AccountId;
-            var transactionId = Settings.TransactionId;
+            var accountId = (await Ais.GetAccountList(token, consentId)).First();
+
+            var transactionId = (await Ais.GetTransactionList(token, consentId, accountId)).Skip(1).First();
             var uri = new Uri(
                 $"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts/{accountId}/transactions/{transactionId}");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
