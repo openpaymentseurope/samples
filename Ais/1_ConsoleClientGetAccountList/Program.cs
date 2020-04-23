@@ -18,22 +18,10 @@ namespace _1_ConsoleClientGetAccountList
             var url = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId);
 
             Console.WriteLine(url);
-
-
-            // 9311219639
-            // 9311219589
-            // 8811215477
-            // 8811212862
-            // 8311211356
-             
-
             Console.Write("Code: ");
+
             var code = Console.ReadLine();
-
             var consentToken =  await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
-
-            Console.WriteLine(consentToken);
-
             var client = new HttpClient();
             var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts");
 

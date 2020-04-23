@@ -16,21 +16,12 @@ namespace _3_ConsoleClientGetBalances
             var url = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId);
 
             Console.WriteLine(url);
-
-            // 9311219639
-            // 9311219589
-            // 8811215477
-            // 8811212862
-            // 8311211356
-
             Console.Write("Code: ");
+            
             var code = Console.ReadLine();
-            
             var consentToken = await Consent.GetToken("accountinformation", code, consentId, consentAuthorisationId);
-            
-            Console.WriteLine(consentToken);
             var client = new HttpClient();
-            var accountId = "150563bd-7b73-4355-9fe7-0a36d5f08cf0";
+            var accountId = Settings.AccountId;
             var uri = new Uri($"{Settings.ApiUrl}/psd2/accountinformation/v1/accounts/{accountId}/balances");
 
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);

@@ -33,12 +33,12 @@ namespace Shared
                 },
                 creditorAccount = new
                 {
-                    iban = "SE3150000000054400047989",
+                    iban = Settings.CreditorAccount,
                     currency = "SEK"
                 },                
                 debtorAccount = new
                 {
-                    iban = "SE0950000000054400047997",
+                    iban = Settings.DebtorAccount,
                     currency = "SEK"
                 },
                 creditorName = "Enterprise Inc",
