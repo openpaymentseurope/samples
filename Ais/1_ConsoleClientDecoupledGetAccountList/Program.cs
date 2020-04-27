@@ -17,7 +17,7 @@ namespace _1_ConsoleClientGetAccountList
             var code = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId, bicFi);
 
 
-            while (!await Consent.Until(token, consentId, consentAuthorisationId, bicFi))
+            while (!await Consent.WaitUntilFinalised(token, consentId, consentAuthorisationId, bicFi))
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(500));
             }

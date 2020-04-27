@@ -155,7 +155,7 @@ namespace Shared
             return obj?.GetValue("access_token").Value<string>();
         }
         
-        public static async Task<bool> Until(string token, string consentId, string consentAuthorisationId,
+        public static async Task<bool> WaitUntilFinalised(string token, string consentId, string consentAuthorisationId,
             string bicFi)
         {
             var client = new HttpClient();
