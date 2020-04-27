@@ -84,7 +84,7 @@ namespace Shared
             client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             client.DefaultRequestHeaders.Add("Accept", "*/*");
-
+            
             var jsonObj = JsonConvert.SerializeObject(new
             {
                 authenticationMethodId = "mbid",
@@ -92,9 +92,7 @@ namespace Shared
 
             var response = await client.PutAsync(uri, new StringContent(jsonObj, Encoding.UTF8, "application/json"));
             var json = await response.Content.ReadAsStringAsync();
-
             var obj = JsonConvert.DeserializeObject<JObject>(json);
-
             var url = obj["challengeData"]["data"].Select(d => d.Value<string>()).First();
 
             return url;
@@ -134,7 +132,7 @@ namespace Shared
             var uri = new Uri($"{Settings.AuthUrl}/connect/token");
             client.DefaultRequestHeaders.Add("X-ConsentId", consentId);
             client.DefaultRequestHeaders.Add("X-ConsentAuthorisationId", consentAuthorisationId);
-
+            
             var response = await client.PostAsync(uri, new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("client_id", Settings.ClientId),
@@ -146,9 +144,47 @@ namespace Shared
             }));
 
             var json = await response.Content.ReadAsStringAsync();
+
+            if (json == "{\"error\":\"invalid_grant\"}")
+            {
+                throw new Exception(json);
+            }
+            
             var obj = JsonConvert.DeserializeObject<JObject>(json);
 
-            return obj.GetValue("access_token").Value<string>();
+            return obj?.GetValue("access_token").Value<string>();
         }
+        
+        public static async Task<bool> Until(string token, string consentId, string consentAuthorisationId,
+            string bicFi)
+        {
+            var client = new HttpClient();
+            var uri = new Uri($"{Settings.ApiUrl}/psd2/consent/v1/consents/{consentId}/authorisations/{consentAuthorisationId}");
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            client.DefaultRequestHeaders.Add("PSU-IP-Address", Settings.IpAddress);
+            client.DefaultRequestHeaders.Add("X-BicFi", bicFi);
+            client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            client.DefaultRequestHeaders.Add("Accept", "*/*");
+            
+            var response = await client.GetStringAsync(uri);
+            var json = response;
+            var obj = JsonConvert.DeserializeObject<JObject>(json);
+            var status = obj["scaStatus"].Value<string>();
+
+            if (status == "finalised")
+            {
+                return true;
+            }
+            
+            var match = new[] {"failed", "exempted"};
+
+            if (match.Contains(status))
+            {
+                throw new Exception(status);
+            }
+
+            return false;
+        }        
     }
 }
