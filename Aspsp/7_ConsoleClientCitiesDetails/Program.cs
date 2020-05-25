@@ -10,7 +10,7 @@ namespace ConsoleClientCitiesDetails
     {
         static async Task Main(string[] args)
         {
-            var token = await Aspsp.GetToken("aspspinformation");
+            var token = await Aspsp.GetToken("aspspinformation private");
             var client = new HttpClient();
             var cityCode = "37efa883-c8ad-4ff7-927b-b11b02beb923";
             var uri = new Uri($"{Settings.ApiUrl}/psd2/aspspinformation/v1/cities/{cityCode}");

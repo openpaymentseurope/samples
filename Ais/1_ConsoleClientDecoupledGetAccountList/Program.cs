@@ -10,12 +10,11 @@ namespace _1_ConsoleClientGetAccountList
     {
         static async Task Main(string[] args)
         {
-            var token = await Aspsp.GetToken("accountinformation");
-            var bicFi = "NDEASESS";
+            var token = await Aspsp.GetToken("accountinformation private");
+            var bicFi = "HANDSESS";
             var consentId = await Consent.CreateConsent(token, bicFi);
             var consentAuthorisationId = await Consent.StartConsentAuthorisationProcess(token, consentId, bicFi, "199311219639");
             var code = await Consent.UpdatePsuDataForConsent(token, consentId, consentAuthorisationId, bicFi);
-
 
             while (!await Consent.WaitUntilFinalised(token, consentId, consentAuthorisationId, bicFi))
             {

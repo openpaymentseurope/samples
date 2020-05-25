@@ -93,7 +93,8 @@ namespace Shared
             var response = await client.PutAsync(uri, new StringContent(jsonObj, Encoding.UTF8, "application/json"));
             var json = await response.Content.ReadAsStringAsync();
             var obj = JsonConvert.DeserializeObject<JObject>(json);
-            var url = obj["challengeData"]["data"].Select(d => d.Value<string>()).First();
+            //var url = obj["_links"]["scaOAuth"]["href"].Value<string>();
+            var url = obj["challengeData"]["data"].First().Value<string>();
 
             return url;
         }

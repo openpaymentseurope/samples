@@ -10,7 +10,7 @@ namespace ConsoleClientAspspDetails
     {
         static async Task Main(string[] args)
         {
-            var token = await Aspsp.GetToken("aspspinformation");
+            var token = await Aspsp.GetToken("aspspinformation private");
             var client = new HttpClient();
             var aspspCode = Settings.BicFi;
             var uri = new Uri($"{Settings.ApiUrl}/psd2/aspspinformation/v1/aspsps/{aspspCode}");
