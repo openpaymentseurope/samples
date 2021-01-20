@@ -106,9 +106,6 @@ namespace PaymentInitiation
             {
                 throw new Exception($"ERROR: payment {paymentName} not found");
             }
-            Console.WriteLine($"{_payment.paymentService}");
-            Console.WriteLine($"{_payment.paymentProduct}");
-            Console.WriteLine($"{_payment.paymentBody}");
 
             Console.Write("Enter your Client Secret: ");
             _clientSecret = ConsoleReadPassword();
