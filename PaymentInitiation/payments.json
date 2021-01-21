@@ -1,0 +1,123 @@
+[
+    {
+        "Name": "DABASESXpriv",
+        "BICFI": "DABASESX",
+        "PSUContextScope": "private",
+        "PSUCorporateId": "",
+        "PaymentService": "payments",
+        "PaymentProduct": "domestic",
+        "Payment": {
+            "instructedAmount": {
+                "currency": "GBP",
+                "amount": "1.5"
+            },
+            "debtorAccount": {
+                "bban": "84600447424379",
+                "currency": "GBP"
+            },
+            "creditorName": "Sandbox Test Nickname",
+            "creditorAccount": {
+                "bban": "15517312471731",
+                "currency": "GBP"
+            },
+            "remittanceInformationUnstructured": "My Payment"
+        }
+    },
+    {
+        "Name": "ESSESESSpriv",
+        "BICFI": "ESSESESS",
+        "PSUContextScope": "private",
+        "PSUCorporateId": "",
+        "PaymentService": "payments",
+        "PaymentProduct": "domestic",
+        "Payment": {
+            "instructedAmount": {
+                "currency": "SEK",
+                "amount": "1.5"
+            },
+            "debtorAccount": {
+                "iban": "SE3750000000054400047881",
+                "currency": "SEK"
+            },
+            "creditorName": "Freddie Gummesson",
+            "creditorAccount": {
+                "iban": "SE2550000000054400047903",
+                "currency": "SEK"
+            },
+            "remittanceInformationUnstructured": "My Payment"
+        }
+    },
+    {
+        "Name": "HANDSESSpriv",
+        "BICFI": "HANDSESS",
+        "PSUContextScope": "private",
+        "PSUCorporateId": "",
+        "PaymentService": "payments",
+        "PaymentProduct": "domestic",
+        "Payment": {
+            "instructedAmount": {
+                "currency": "SEK",
+                "amount": "1.5"
+            },
+            "debtorAccount": {
+                "bban": "403333911",
+                "currency": "SEK"
+            },
+            "creditorName": "Bo Bankkund",
+            "creditorAccount": {
+                "bban": "401975231",
+                "clearingNumber": "1000",
+                "currency": "SEK"
+            },
+            "remittanceInformationUnstructured": "My Payment"
+        }
+    },
+    {
+        "Name": "NDEASESSpriv",
+        "BICFI": "NDEASESS",
+        "PSUContextScope": "private",
+        "PSUCorporateId": "",
+        "PaymentService": "payments",
+        "PaymentProduct": "domestic",
+        "Payment": {
+            "instructedAmount": {
+                "currency": "SEK",
+                "amount": "1.5"
+            },
+            "debtorAccount": {
+                "bban": "41351300039",
+                "currency": "SEK"
+            },
+            "creditorName": "Margit Alros",
+            "creditorAccount": {
+                "iban": "SE2730000000032704620555",
+                "currency": "SEK"
+            },
+            "remittanceInformationUnstructured": "My Payment"
+        }
+    },
+    {
+        "Name": "SWEDSESSpriv",
+        "BICFI": "SWEDSESS",
+        "PSUContextScope": "private",
+        "PSUCorporateId": "",
+        "PaymentService": "payments",
+        "PaymentProduct": "domestic",
+        "Payment": {
+            "instructedAmount": {
+                "currency": "SEK",
+                "amount": "1.5"
+            },
+            "debtorAccount": {
+                "iban": "SE4880000123459876543219",
+                "currency": "SEK"
+            },
+            "creditorName": "Snugge",
+            "creditorAccount": {
+                "iban": "SE4880000123451234567890",
+                "currency": "SEK"
+            },
+            "remittanceInformationUnstructured": "My Payment"
+        }
+    }
+]
