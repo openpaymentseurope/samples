@@ -69,10 +69,10 @@ namespace PaymentInitiation
         private static string _psuIPAddress;
         private static string _psuUserAgent;
         private static string _psuCorporateId;
-        private static string _clientId = "";
-        private static string _clientSecret = "";
-        private static string _redirectUri = "";
-        private static string _token = "";
+        private static string _clientId;
+        private static string _clientSecret;
+        private static string _redirectUri;
+        private static string _token;
         private static Payment _payment;
 
 
