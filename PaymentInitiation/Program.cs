@@ -61,7 +61,6 @@ namespace PaymentInitiation
                 this.PaymentProduct = paymentProduct;
                 this.PaymentBody = paymentBody;
             }
-
         }
 
         public enum SCAMethod
@@ -167,9 +166,6 @@ namespace PaymentInitiation
             _psuIPAddress = settings.PSUIPAddress;
             _psuUserAgent = settings.PSUUserAgent;
 
-            Console.WriteLine($"_psuIPAddress: {_psuIPAddress}");
-            Console.WriteLine($"_psuUserAgent: {_psuUserAgent}");
-
             var jsonString = File.ReadAllText("payments.json");
             dynamic payments = JsonConvert.DeserializeObject<dynamic>(jsonString);
 
@@ -263,6 +259,7 @@ namespace PaymentInitiation
             qrCodeImage.Save(QRCodeImageFilename, ImageFormat.Png);
             string qrCodeUrl = "file://" + Path.GetFullPath(".") + "/" + QRCodeImageFilename;
             Console.WriteLine($"qrCodeUrl: {qrCodeUrl}");
+            Console.WriteLine();
             OpenBrowser(qrCodeUrl);
         }
 
@@ -367,7 +364,7 @@ namespace PaymentInitiation
 
         private static async Task<string> ActivateOAuthPaymentAuthorisation(string authUri, string paymentId, string authId, string clientId, string clientSecret, string redirectUri, string scope, string authCode)
         {
-            Console.WriteLine("Activate OAuth Consent Authorisation");
+            Console.WriteLine("Activate OAuth Payment Authorisation");
             var authClient = CreateGenericAuthClient();
             authClient.DefaultRequestHeaders.Add("X-PaymentId", paymentId);
             authClient.DefaultRequestHeaders.Add("X-PaymentAuthorisationId", authId);
