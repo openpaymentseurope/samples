@@ -1,4 +1,14 @@
-﻿using System;
+﻿//////////////////////////////////////////////////////////////////////
+//
+// Open Payments Europe AB 2021
+//
+// Open Banking Platform - Payment Initiation Service
+// 
+// Payment Initiation example application
+//
+//////////////////////////////////////////////////////////////////////
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Diagnostics;
