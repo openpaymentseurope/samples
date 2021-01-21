@@ -75,6 +75,75 @@ namespace PaymentInitiation
         private static string _token;
         private static Payment _payment;
 
+        static async Task Main(string[] args)
+        {
+            if (args.Length != 1)
+            {
+                Usage();
+                return;
+            }
+            string paymentName = args[0];
+
+            Init(paymentName);
+
+            _token = await GetToken(_clientId, _clientSecret, _paymentinitiationScope);
+            Console.WriteLine($"token: {_token}");
+            Console.WriteLine();
+
+            _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody);
+            Console.WriteLine($"paymentId: {_payment.PaymentId}");
+            Console.WriteLine();
+
+            _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+            Console.WriteLine($"authId: {_payment.PaymentAuthId}");
+            Console.WriteLine();
+
+            (_payment.ScaMethod, _payment.ScaData) = await UpdatePSUDataForPaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
+            Console.WriteLine($"scaMethod: {_payment.ScaMethod}");
+            Console.WriteLine($"data: {_payment.ScaData}");
+            Console.WriteLine();
+
+            bool scaSuccess;
+            if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT || _payment.ScaMethod == SCAMethod.REDIRECT)
+            {
+                scaSuccess = await SCAFlowRedirect(_payment, "MyState");
+            }
+            else if (_payment.ScaMethod == SCAMethod.DECOUPLED)
+            {
+                scaSuccess = await SCAFlowDecoupled(_payment);
+            }
+            else
+            {
+                throw new Exception($"ERROR: unknown SCA method {_payment.ScaMethod}");
+            }
+
+            if (scaSuccess)
+            {
+                Console.WriteLine("SCA completed successfully");
+                Console.WriteLine();
+
+                string transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+                Console.WriteLine($"transactionStatus: {transactionStatus}");
+                Console.WriteLine();
+                while (transactionStatus.Equals("RCVD"))
+                {
+                    await Task.Delay(2000);
+                    transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+                    Console.WriteLine($"transactionStatus: {transactionStatus}");
+                    Console.WriteLine();
+                }
+            }
+            else
+            {
+                Console.WriteLine("SCA failed");
+                Console.WriteLine();
+            }
+        }
+
+        static void Usage()
+        {
+            Console.WriteLine("Usage: PaymentInitiation <payment name>");
+        }
 
         static void Init(string paymentName)
         {
@@ -139,76 +208,6 @@ namespace PaymentInitiation
                 _apiUri = "https://api.sandbox.openbankingplatform.com";
             }
 
-        }
-
-        static void Usage()
-        {
-            Console.WriteLine("Usage: PaymentInitiation <payment name>");
-        }
-
-        static async Task Main(string[] args)
-        {
-            if (args.Length != 1)
-            {
-                Usage();
-                return;
-            }
-            string paymentName = args[0];
-
-            Init(paymentName);
-
-            _token = await GetToken(_clientId, _clientSecret, _paymentinitiationScope);
-            Console.WriteLine($"token: {_token}");
-            Console.WriteLine();
-
-            _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody);
-            Console.WriteLine($"paymentId: {_payment.PaymentId}");
-            Console.WriteLine();
-
-            _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
-            Console.WriteLine($"authId: {_payment.PaymentAuthId}");
-            Console.WriteLine();
-
-            (_payment.ScaMethod, _payment.ScaData) = await UpdatePSUDataForPaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
-            Console.WriteLine($"scaMethod: {_payment.ScaMethod}");
-            Console.WriteLine($"data: {_payment.ScaData}");
-            Console.WriteLine();
-
-            bool scaSuccess;
-            if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT || _payment.ScaMethod == SCAMethod.REDIRECT)
-            {
-                scaSuccess = await SCAFlowRedirect(_payment, "MyState");
-            }
-            else if (_payment.ScaMethod == SCAMethod.DECOUPLED)
-            {
-                scaSuccess = await SCAFlowDecoupled(_payment);
-            }
-            else
-            {
-                throw new Exception($"ERROR: unknown SCA method {_payment.ScaMethod}");
-            }
-
-            if (scaSuccess)
-            {
-                Console.WriteLine("SCA completed successfully");
-                Console.WriteLine();
-
-                string transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
-                Console.WriteLine($"transactionStatus: {transactionStatus}");
-                Console.WriteLine();
-                while (transactionStatus.Equals("RCVD"))
-                {
-                    await Task.Delay(2000);
-                    transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
-                    Console.WriteLine($"transactionStatus: {transactionStatus}");
-                    Console.WriteLine();
-                }
-            }
-            else
-            {
-                Console.WriteLine("SCA failed");
-                Console.WriteLine();
-            }
         }
 
         private static string ConsoleReadPassword()
