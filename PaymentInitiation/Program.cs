@@ -35,19 +35,28 @@ namespace PaymentInitiation
 
         public class Payment
         {
-            public string bicFi;
-            public string paymentBody;
-            public string paymentService;
-            public string paymentProduct;
-            public string paymentId;
-            public string paymentAuthId;
-            public SCAMethod scaMethod;
-            public string scaData;
+            public string BicFi { get; }
+            public string PaymentService { get; }
+            public string PaymentProduct { get; }
+            public string PaymentBody { get; }
+            public string PaymentId { get; set; }
+            public string PaymentAuthId { get; set; }
+            public SCAMethod ScaMethod { get; set; }
+            public string ScaData { get; set; }
+
+            public Payment(string bicFi, string paymentService, string paymentProduct, string paymentBody)
+            {
+                this.BicFi = bicFi;
+                this.PaymentService = paymentService;
+                this.PaymentProduct = paymentProduct;
+                this.PaymentBody = paymentBody;
+            }
+
         }
 
         public enum SCAMethod
         {
-            UNDEFINED,
+            UNDEFINED = 1,
             OAUTH_REDIRECT,
             REDIRECT,
             DECOUPLED
@@ -82,9 +91,6 @@ namespace PaymentInitiation
             Console.WriteLine($"_psuIPAddress: {_psuIPAddress}");
             Console.WriteLine($"_psuUserAgent: {_psuUserAgent}");
 
-
-            _payment = new Payment();
-
             var jsonString = File.ReadAllText("payments.json");
             dynamic payments = JsonConvert.DeserializeObject<dynamic>(jsonString);
 
@@ -93,16 +99,16 @@ namespace PaymentInitiation
                 string name = item.Name;
                 if (name.Equals(paymentName, StringComparison.OrdinalIgnoreCase))
                 {
-                    _payment.bicFi = item.BICFI;
+                    _payment = new Payment(item.BICFI,
+                                           item.PaymentService,
+                                           item.PaymentProduct,
+                                           JsonConvert.SerializeObject(item.Payment, Newtonsoft.Json.Formatting.None));
                     _paymentinitiationScope = $"{item.PSUContextScope} paymentinitiation";
                     _psuCorporateId = item.PSUContextScope.Equals("corporate") ? item.PSUContextScope : null;
-                    _payment.paymentService = item.PaymentService;
-                    _payment.paymentProduct = item.PaymentProduct;
-                    _payment.paymentBody = JsonConvert.SerializeObject(item.Payment, Newtonsoft.Json.Formatting.None);
                     break;
                 }
             }
-            if (_payment.paymentBody == null)
+            if (_payment.PaymentBody == null)
             {
                 throw new Exception($"ERROR: payment {paymentName} not found");
             }
@@ -156,25 +162,25 @@ namespace PaymentInitiation
             Console.WriteLine($"token: {_token}");
             Console.WriteLine();
 
-            _payment.paymentId = await CreatePaymentInitiation(_payment.bicFi, _payment.paymentService, _payment.paymentProduct, _payment.paymentBody);
-            Console.WriteLine($"paymentId: {_payment.paymentId}");
+            _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody);
+            Console.WriteLine($"paymentId: {_payment.PaymentId}");
             Console.WriteLine();
 
-            _payment.paymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.bicFi, _payment.paymentService, _payment.paymentProduct, _payment.paymentId);
-            Console.WriteLine($"authId: {_payment.paymentAuthId}");
+            _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+            Console.WriteLine($"authId: {_payment.PaymentAuthId}");
             Console.WriteLine();
 
-            (_payment.scaMethod, _payment.scaData) = await UpdatePSUDataForPaymentInitiation(_payment.bicFi, _payment.paymentService, _payment.paymentProduct, _payment.paymentId, _payment.paymentAuthId);
-            Console.WriteLine($"scaMethod: {_payment.scaMethod}");
-            Console.WriteLine($"data: {_payment.scaData}");
+            (_payment.ScaMethod, _payment.ScaData) = await UpdatePSUDataForPaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
+            Console.WriteLine($"scaMethod: {_payment.ScaMethod}");
+            Console.WriteLine($"data: {_payment.ScaData}");
             Console.WriteLine();
 
             bool scaSuccess = false;
-            if (_payment.scaMethod == SCAMethod.OAUTH_REDIRECT || _payment.scaMethod == SCAMethod.REDIRECT)
+            if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT || _payment.ScaMethod == SCAMethod.REDIRECT)
             {
                 scaSuccess = await SCAFlowRedirect(_payment, "MyState");
             }
-            else if (_payment.scaMethod == SCAMethod.DECOUPLED)
+            else if (_payment.ScaMethod == SCAMethod.DECOUPLED)
             {
                 scaSuccess = await SCAFlowDecoupled(_payment);
             }
@@ -191,7 +197,7 @@ namespace PaymentInitiation
                 string transactionStatus = "RCVD";
                 while (transactionStatus.Equals("RCVD"))
                 {
-                    transactionStatus = await GetPaymentInitiationStatus(_payment.bicFi, _payment.paymentService, _payment.paymentProduct, _payment.paymentId);
+                    transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
                     Console.WriteLine($"transactionStatus: {transactionStatus}");
                     Console.WriteLine();
                     if (transactionStatus.Equals("RCVD"))
@@ -256,7 +262,7 @@ namespace PaymentInitiation
             string scaStatus = "";
             while (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
             {
-                scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.bicFi, _payment.paymentService, _payment.paymentProduct, _payment.paymentId, _payment.paymentAuthId);
+                scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
                 if (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
@@ -270,19 +276,19 @@ namespace PaymentInitiation
 
         private static async Task<bool> SCAFlowRedirect(Payment payment, string state)
         {
-            string url = _payment.scaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
+            string url = _payment.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
             Console.WriteLine($"URL: {url}");
             Console.WriteLine();
 
             OpenBrowser(url);
 
-            if (_payment.scaMethod == SCAMethod.OAUTH_REDIRECT)
+            if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT)
             {
                 Console.Write("Enter authentication code returned by redirect query param: ");
                 string authCode = Console.ReadLine();
                 Console.WriteLine();
 
-                string newToken = await ActivateOAuthPaymentAuthorisation(_authUri, _payment.paymentId, _payment.paymentAuthId, _clientId, _clientSecret, _redirectUri, _paymentinitiationScope, authCode);
+                string newToken = await ActivateOAuthPaymentAuthorisation(_authUri, _payment.PaymentId, _payment.PaymentAuthId, _clientId, _clientSecret, _redirectUri, _paymentinitiationScope, authCode);
                 Console.WriteLine();
                 if (String.IsNullOrEmpty(newToken))
                     return false;
@@ -293,7 +299,7 @@ namespace PaymentInitiation
 
         private static async Task<bool> SCAFlowDecoupled(Payment payment)
         {
-            string bankIdUrl = GenerateBankIdURL(_payment.scaData, WebUtility.UrlEncode("https://openpayments.io"));
+            string bankIdUrl = GenerateBankIdURL(_payment.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
             DisplayQRCode(bankIdUrl);
 
             return await PollSCAStatus(payment, 2000);
