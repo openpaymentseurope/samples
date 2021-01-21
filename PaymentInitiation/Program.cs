@@ -320,7 +320,6 @@ namespace PaymentInitiation
             apiClient.BaseAddress = new Uri(_apiUri);
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             apiClient.DefaultRequestHeaders.Add("X-BicFi", bicFi);
             apiClient.DefaultRequestHeaders.Add("PSU-IP-Address", _psuIPAddress);
             if (!String.IsNullOrEmpty(_psuCorporateId))
@@ -391,6 +390,7 @@ namespace PaymentInitiation
         {
             Console.WriteLine("Create Payment Initiation");
             var apiClient = CreateGenericApiClient(bicFi);
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             apiClient.DefaultRequestHeaders.Add("PSU-User-Agent", _psuUserAgent);
 
             Console.WriteLine($"requestBody: {jsonPaymentBody}");
@@ -412,6 +412,7 @@ namespace PaymentInitiation
         {
             Console.WriteLine("Start Payment Initiation Authorisation Process");
             var apiClient = CreateGenericApiClient(bicFi);
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
 
             string jsonBody = "";
             var response = await apiClient.PostAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/authorisations", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -432,6 +433,7 @@ namespace PaymentInitiation
         {
             Console.WriteLine("Update PSU Data For Payment Initiation");
             var apiClient = CreateGenericApiClient(bicFi);
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
 
             string jsonBody = "{\"authenticationMethodId\": \"mbid\"}";
             var response = await apiClient.PutAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/authorisations/{authId}", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -481,6 +483,7 @@ namespace PaymentInitiation
         {
             Console.WriteLine("Get Payment Initiation Authorisation SCA Status");
             var apiClient = CreateGenericApiClient(bicFi);
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
 
             var response = await apiClient.GetAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/authorisations/{authId}");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -500,6 +503,7 @@ namespace PaymentInitiation
         {
             Console.WriteLine("Get Payment Initiation Status");
             var apiClient = CreateGenericApiClient(bicFi);
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
 
             var response = await apiClient.GetAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/status");
             string responseContent = await response.Content.ReadAsStringAsync();
