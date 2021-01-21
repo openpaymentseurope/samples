@@ -99,9 +99,9 @@ namespace PaymentInitiation
                 string name = item.Name;
                 if (name.Equals(paymentName, StringComparison.OrdinalIgnoreCase))
                 {
-                    _payment = new Payment(item.BICFI,
-                                           item.PaymentService,
-                                           item.PaymentProduct,
+                    _payment = new Payment((string)item.BICFI,
+                                           (string)item.PaymentService,
+                                           (string)item.PaymentProduct,
                                            JsonConvert.SerializeObject(item.Payment, Newtonsoft.Json.Formatting.None));
                     _paymentinitiationScope = $"{item.PSUContextScope} paymentinitiation";
                     _psuCorporateId = item.PSUContextScope.Equals("corporate") ? item.PSUContextScope : null;
@@ -129,8 +129,7 @@ namespace PaymentInitiation
                 string certPassword = ConsoleReadPassword();
                 Console.WriteLine();
 
-                X509Certificate2 certificate = new X509Certificate2(settings.ProductionClientCertificateFile, certPassword,
-                X509KeyStorageFlags.Exportable | X509KeyStorageFlags.PersistKeySet | X509KeyStorageFlags.UserKeySet);
+                X509Certificate2 certificate = new X509Certificate2(settings.ProductionClientCertificateFile, certPassword);
                 _apiClientHandler.ClientCertificates.Add(certificate);
             }
             else
