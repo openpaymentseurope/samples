@@ -174,7 +174,7 @@ namespace PaymentInitiation
             Console.WriteLine($"data: {_payment.ScaData}");
             Console.WriteLine();
 
-            bool scaSuccess = false;
+            bool scaSuccess;
             if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT || _payment.ScaMethod == SCAMethod.REDIRECT)
             {
                 scaSuccess = await SCAFlowRedirect(_payment, "MyState");
@@ -185,7 +185,7 @@ namespace PaymentInitiation
             }
             else
             {
-                throw new Exception("ERROR: unknown SCA method");
+                throw new Exception($"ERROR: unknown SCA method {_payment.ScaMethod}");
             }
 
             if (scaSuccess)
