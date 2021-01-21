@@ -259,14 +259,15 @@ namespace PaymentInitiation
 
         private static async Task<bool> PollSCAStatus(Payment payment, int millisecondsDelay)
         {
-            string scaStatus = "";
+            string scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
+            Console.WriteLine($"scaStatus: {scaStatus}");
+            Console.WriteLine();
             while (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
             {
+                await Task.Delay(millisecondsDelay);
                 scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
-                if (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
-                    await Task.Delay(millisecondsDelay);
             }
             if (scaStatus.Equals("failed"))
                 return false;
