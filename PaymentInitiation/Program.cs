@@ -193,14 +193,15 @@ namespace PaymentInitiation
                 Console.WriteLine("SCA completed successfully");
                 Console.WriteLine();
 
-                string transactionStatus = "RCVD";
+                string transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+                Console.WriteLine($"transactionStatus: {transactionStatus}");
+                Console.WriteLine();
                 while (transactionStatus.Equals("RCVD"))
                 {
+                    await Task.Delay(2000);
                     transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
                     Console.WriteLine($"transactionStatus: {transactionStatus}");
                     Console.WriteLine();
-                    if (transactionStatus.Equals("RCVD"))
-                        await Task.Delay(2000);
                 }
             }
             else
