@@ -33,6 +33,9 @@ namespace CreateConsent
     {
         private const string QRCodeImageFilename = "QRCode.png";
 
+        //
+        // Configuration settings
+        //
         public class Settings
         {
             public string ClientId { get; set; }
@@ -45,6 +48,9 @@ namespace CreateConsent
             public string PSUUserAgent { get; set; }
         }
 
+        //
+        // Consent context
+        //
         public class Consent
         {
             public string BicFi { get; }
@@ -91,19 +97,31 @@ namespace CreateConsent
 
             Init(bicFi);
 
+            //
+            // Get an API access token from auth server with the scope needed
+            //
             _token = await GetToken(_clientId, _clientSecret, _accountinformationScope);
             Console.WriteLine($"token: {_token}");
             Console.WriteLine();
 
+            //
+            // Create a consent valid for 1 day
+            //
             DateTime validUntil = DateTime.Now.AddDays(1);
             _consent.ConsentId = await CreateConsent(_consent.BicFi, validUntil);
             Console.WriteLine($"consentId: {_consent.ConsentId}");
             Console.WriteLine();
 
+            //
+            // Create a consent authorization object to be used for authorizing the consent with the end user
+            //
             _consent.ConsentAuthId = await StartConsentAuthorisationProcess(_consent.BicFi, _consent.ConsentId);
             Console.WriteLine($"authId: {_consent.ConsentAuthId}");
             Console.WriteLine();
 
+            //
+            // Start the consent authorization process with the end user
+            //
             (_consent.ScaMethod, _consent.ScaData) = await UpdatePSUDataForConsent(_consent.BicFi, _consent.ConsentId, _consent.ConsentAuthId);
             Console.WriteLine($"scaMethod: {_consent.ScaMethod}");
             Console.WriteLine($"data: {_consent.ScaData}");
@@ -112,10 +130,16 @@ namespace CreateConsent
             bool scaSuccess;
             if (_consent.ScaMethod == SCAMethod.OAUTH_REDIRECT || _consent.ScaMethod == SCAMethod.REDIRECT)
             {
+                //
+                // Bank uses a redirect flow for Strong Customer Authentication
+                //
                 scaSuccess = await SCAFlowRedirect(_consent, "MyState");
             }
             else if (_consent.ScaMethod == SCAMethod.DECOUPLED)
             {
+                //
+                // Bank uses a decoupled flow for Strong Customer Authentication
+                //
                 scaSuccess = await SCAFlowDecoupled(_consent);
             }
             else
@@ -123,22 +147,34 @@ namespace CreateConsent
                 throw new Exception($"ERROR: unknown SCA method {_consent.ScaMethod}");
             }
 
-            if (scaSuccess)
-            {
-                Console.WriteLine("SCA completed successfully");
-                Console.WriteLine();
-
-                string consentStatus = await GetConsentStatus(_consent.BicFi, _consent.ConsentId);
-                Console.WriteLine($"consentStatus: {consentStatus}");
-                Console.WriteLine();
-            }
-            else
+            if (!scaSuccess)
             {
                 Console.WriteLine("SCA failed");
                 Console.WriteLine();
                 return;
             }
 
+            Console.WriteLine("SCA completed successfully");
+            Console.WriteLine();
+
+            //
+            // Check the status of the consent, which should be "valid" after a successful SCA 
+            //
+            string consentStatus = await GetConsentStatus(_consent.BicFi, _consent.ConsentId);
+            Console.WriteLine($"consentStatus: {consentStatus}");
+            Console.WriteLine();
+
+            if (!consentStatus.Equals("valid"))
+            {
+                Console.WriteLine("Consent is not valid");
+                Console.WriteLine();
+                return;
+            }
+
+            //
+            // Use the valid consent to call AIS service "Get Account List"
+            // that will list the bank accounts of the end user
+            //
             string accountList = await GetAccountList(_consent.BicFi, _consent.ConsentId);
             Console.WriteLine($"accountList: {accountList}");
             Console.WriteLine();
@@ -151,6 +187,9 @@ namespace CreateConsent
 
         static void Init(string bicFi)
         {
+            //
+            // Read configuration
+            //
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json", false, false);
             IConfigurationRoot config = configurationBuilder.Build();
@@ -165,12 +204,18 @@ namespace CreateConsent
 
             _consent = new Consent(bicFi);
 
+            //
+            // Prompt for client secret
+            //
             Console.Write("Enter your Client Secret: ");
             _clientSecret = ConsoleReadPassword();
             Console.WriteLine();
 
             _apiClientHandler = new HttpClientHandler();
 
+            //
+            // Set up for different environments
+            //
             if (settings.UseProductionEnvironment)
             {
                 Console.WriteLine("Using production");
@@ -221,11 +266,14 @@ namespace CreateConsent
             }
         }
 
-        private static string GenerateBankIdURL(string autostartToken, string redirectUri)
+        private static string FormatBankIdURL(string autostartToken, string redirectUri)
         {
             return $"bankid:///?autostarttoken={autostartToken}&redirect={redirectUri}";
         }
 
+        //
+        // Generates a QR-code image from a character string and opens it with default application
+        //
         private static void DisplayQRCode(string url)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -239,6 +287,9 @@ namespace CreateConsent
             OpenBrowser(qrCodeUrl);
         }
 
+        //
+        // Will poll the SCA status indefinitely until status is either "finalised" or "failed"
+        //
         private static async Task<bool> PollSCAStatus(Consent consent, int millisecondsDelay)
         {
             string scaStatus = await GetConsentAuthorisationSCAStatus(consent.BicFi, consent.ConsentId, consent.ConsentAuthId);
@@ -257,17 +308,28 @@ namespace CreateConsent
             return true;
         }
 
+        //
+        // Starts a redirect flow for SCA by opening SCA URL in default browser (for end user to authenticate),
+        // then prompts for authorisation code returned in final redirect query parameter "code".
+        // (prompting for this is because of the simplicity of this example application that is not implementing a http server)
+        //
         private static async Task<bool> SCAFlowRedirect(Consent consent, string state)
         {
+            //
+            // Fill in the details on the given redirect URL template
+            //
             string url = consent.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
             Console.WriteLine($"URL: {url}");
             Console.WriteLine();
 
             OpenBrowser(url);
 
+            //
+            // If flow is OAuthRedirect, authorisation code needs to be activated
+            //
             if (consent.ScaMethod == SCAMethod.OAUTH_REDIRECT)
             {
-                Console.Write("Enter authentication code returned by redirect query param: ");
+                Console.Write("Enter authorisation code returned by redirect query param: ");
                 string authCode = Console.ReadLine();
                 Console.WriteLine();
 
@@ -277,12 +339,19 @@ namespace CreateConsent
                     return false;
             }
 
+            //
+            // Wait for a final SCA status
+            //
             return await PollSCAStatus(consent, 2000);
         }
 
+        //
+        // Handles a decoupled flow by formatting a BankId URL then presenting it as an QR-code to be scanned
+        // with BankId, then polling for a final SCA status of the authentication/auhorisation
+        //
         private static async Task<bool> SCAFlowDecoupled(Consent consent)
         {
-            string bankIdUrl = GenerateBankIdURL(consent.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
+            string bankIdUrl = FormatBankIdURL(consent.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
             DisplayQRCode(bankIdUrl);
 
             return await PollSCAStatus(consent, 2000);
