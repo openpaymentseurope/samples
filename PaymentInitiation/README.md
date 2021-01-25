@@ -47,30 +47,32 @@ appsettings.json
 
 payments.json
 ```json5
-    {
-        "Name": "ESSESESSpriv",                      // Unique name that is used when selecting which payment to process when running app
-        "BICFI": "ESSESESS",                         // Identifier of which bank that will be used for the payment
-        "PSUContextScope": "private",                // Which context to use, "private" or "corporate" accounts
-        "PSUCorporateId": "",                        // If corporate context, your corporate id with the bank is given here
-        "PaymentService": "payments",                // Payment Service to use
-        "PaymentProduct": "domestic",                // Payment Product to use ("domestic","swedish-giro","sepa-credit-transfers","international")
-        "Payment": {                                 // Payment body, structure of this is free and specific to the Payment Product used
-            "instructedAmount": {
-                "currency": "SEK",
-                "amount": "1.5"
-            },
-            "debtorAccount": {
-                "iban": "SE3750000000054400047881",
-                "currency": "SEK"
-            },
-            "creditorName": "Freddie Gummesson",
-            "creditorAccount": {
-                "iban": "SE2550000000054400047903",
-                "currency": "SEK"
-            },
-            "remittanceInformationUnstructured": "My Payment"
-        }
-    },
+[
+  {
+      "Name": "ESSESESSpriv",                      // Unique name that is used when selecting which payment to process when running app
+      "BICFI": "ESSESESS",                         // Identifier of which bank that will be used for the payment
+      "PSUContextScope": "private",                // Which context to use, "private" or "corporate" accounts
+      "PSUCorporateId": "",                        // If corporate context, your corporate id with the bank is given here
+      "PaymentService": "payments",                // Payment Service to use
+      "PaymentProduct": "domestic",                // Payment Product to use ("domestic","swedish-giro","sepa-credit-transfers","international")
+      "Payment": {                                 // Payment body, structure of this is free and specific to the Payment Product used
+          "instructedAmount": {
+              "currency": "SEK",
+              "amount": "1.5"
+          },
+          "debtorAccount": {
+              "iban": "SE3750000000054400047881",
+              "currency": "SEK"
+          },
+          "creditorName": "Freddie Gummesson",
+          "creditorAccount": {
+              "iban": "SE2550000000054400047903",
+              "currency": "SEK"
+          },
+          "remittanceInformationUnstructured": "My Payment"
+      }
+  }
+]
 ```
 
 * If you are creating consent for corporate account, you also need to set `PSUCorporateId` to be used for the specific bank (this is for most Swedish banks the company organisation number). 
