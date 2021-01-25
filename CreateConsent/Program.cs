@@ -346,7 +346,7 @@ namespace CreateConsent
         }
 
         //
-        // Handles a decoupled flow by formatting a BankId URL then presenting it as an QR-code to be scanned
+        // Handles a decoupled flow by formatting a BankId URL, presenting it as an QR-code to be scanned
         // with BankId, then polling for a final SCA status of the authentication/auhorisation
         //
         private static async Task<bool> SCAFlowDecoupled(Consent consent)
@@ -357,6 +357,9 @@ namespace CreateConsent
             return await PollSCAStatus(consent, 2000);
         }
 
+        //
+        // Create a http client with the basic common attributes set for a request to auth server
+        //
         private static HttpClient CreateGenericAuthClient()
         {
             var authClient = new HttpClient();
@@ -366,6 +369,9 @@ namespace CreateConsent
             return authClient;
         }
 
+        //
+        // Create a http client with the basic common attributes set for a request to API:s
+        //
         private static HttpClient CreateGenericApiClient(string bicFi)
         {
             var apiClient = new HttpClient(_apiClientHandler);
