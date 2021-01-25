@@ -309,13 +309,13 @@ namespace PaymentInitiation
         //
         private static async Task<bool> PollSCAStatus(Payment payment, int millisecondsDelay)
         {
-            string scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
+            string scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(payment.BicFi, payment.PaymentService, payment.PaymentProduct, payment.PaymentId, payment.PaymentAuthId);
             Console.WriteLine($"scaStatus: {scaStatus}");
             Console.WriteLine();
             while (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
             {
                 await Task.Delay(millisecondsDelay);
-                scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
+                scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(payment.BicFi, payment.PaymentService, payment.PaymentProduct, payment.PaymentId, payment.PaymentAuthId);
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
             }
@@ -335,7 +335,7 @@ namespace PaymentInitiation
             //
             // Fill in the details on the given redirect URL template
             //
-            string url = _payment.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
+            string url = payment.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
             Console.WriteLine($"URL: {url}");
             Console.WriteLine();
 
@@ -344,13 +344,13 @@ namespace PaymentInitiation
             //
             // If flow is OAuthRedirect, authorisation code needs to be activated
             //
-            if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT)
+            if (payment.ScaMethod == SCAMethod.OAUTH_REDIRECT)
             {
                 Console.Write("Enter authorisation code returned by redirect query param: ");
                 string authCode = Console.ReadLine();
                 Console.WriteLine();
 
-                string newToken = await ActivateOAuthPaymentAuthorisation(_authUri, _payment.PaymentId, _payment.PaymentAuthId, _clientId, _clientSecret, _redirectUri, _paymentinitiationScope, authCode);
+                string newToken = await ActivateOAuthPaymentAuthorisation(_authUri, payment.PaymentId, payment.PaymentAuthId, _clientId, _clientSecret, _redirectUri, _paymentinitiationScope, authCode);
                 Console.WriteLine();
                 if (String.IsNullOrEmpty(newToken))
                     return false;
@@ -368,7 +368,7 @@ namespace PaymentInitiation
         //
         private static async Task<bool> SCAFlowDecoupled(Payment payment)
         {
-            string bankIdUrl = FormatBankIdURL(_payment.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
+            string bankIdUrl = FormatBankIdURL(payment.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
             DisplayQRCode(bankIdUrl);
 
             return await PollSCAStatus(payment, 2000);
