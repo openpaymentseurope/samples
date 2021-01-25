@@ -8,13 +8,15 @@ Please note that this is a simplified implementation with a pedagogic purpose of
 # Prerequisites
 
 ### API client credentials
-Sign-up with Open Payments Europe's Developer Portal and register an application to acquire your API client credentials.
+Sign-up with Open Payments Europe's Developer Portal and register an application to acquire your API client credentials (Note that you must register your application to be using the Account Information (AIS) API to use it with this demo).
 https://developer.openpayments.io/
 
 ### Download and install Microsoft .Net Core 
 https://dotnet.microsoft.com/download
 
 ## macOS specific
+If you are running this demo on macOS, you need to install the graphics library `mono-libgdiplus` for the QR-code generation. Please proceed with the following steps.
+
 ### Install Homebrew for macOS
 https://brew.sh
 
@@ -34,7 +36,7 @@ appsettings.json
 {
   "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", // An API client id created in our Developer Portal
   "RedirectURI": "https://acme.com/",                 // A redirect URI registered with the client in Developer Portal
-  "PSUContextScope": "private",                       // Which context to use, private or corporate accounts
+  "PSUContextScope": "private",                       // Which context to use, "private" or "corporate" accounts
   "PSUCorporateId": "",                               // If corporate context, your corporate id with the bank is given here
   "UseProductionEnvironment": false,                  // If true, production environment is used, otherwise sandbox
   "ProductionClientCertificateFile": "acme.com.pfx",  // If production environment, your client certificate filename
@@ -50,4 +52,4 @@ appsettings.json
 ```
 > dotnet run <BicFi>
 ```
-Where BicFi is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS, etc.)
+Where <BicFi> is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS, etc.)
