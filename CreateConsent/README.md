@@ -3,10 +3,11 @@ C# .NET Core example implementation of creation, authorization and use of an AIS
 consent for Open Payments Europe AB:s NextGen REST API:s. 
 
 # Prerequisites
-##API client credentials
+
+### API client credentials
 Sign-up in Open Payments Europe's Developer Portal and register an application to acquire your API client credentials.
 
-##Download and install Microsoft .Net Core 
+### Download and install Microsoft .Net Core 
 https://dotnet.microsoft.com/download
 
 ## macOS specific
