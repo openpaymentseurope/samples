@@ -1,7 +1,7 @@
 # Description 
 C# .NET Core example implementation of creation, authorization and use of an AIS consent for Open Payments Europe AB:s NextGen REST API:s. 
 
-This example demonstrates how to implement a full flow of creating, authorising and using a Consent, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
+This example demonstrates how to implement a full flow of creating and authorising a Consent that can then be used to access bank account information, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
 
 Please note that this is a simplified implementation with a pedagogic purpose of explaining the flow. A production implementation obviously needs more attention to error handling, dealing with asynchronicity and concurrency of multiple consent processing requests.
 
