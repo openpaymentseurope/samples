@@ -74,8 +74,7 @@ payments.json
   }
 ]
 ```
-
-* If you are creating consent for corporate account, you also need to set `PSUCorporateId` to be used for the specific bank (this is for most Swedish banks the company organisation number). 
+* A list of payments may be created in the `payments.json` configuration file where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
 
 # Running
 ```
