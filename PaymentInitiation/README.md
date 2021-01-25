@@ -74,7 +74,7 @@ payments.json
   }
 ]
 ```
-* A list of payments may be created in the `payments.json` configuration file where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
+* An array of payments may be created in the `payments.json` configuration file, where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
 
 # Running
 ```
