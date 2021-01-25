@@ -27,14 +27,14 @@ https://brew.sh
 appsettings.json
 ```json
 {
-  "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",  An API client id created in our Developer Portal
-  "RedirectURI": "https://acme.com/",                  A redirect URI registered with the client in Developer Portal
-  "PSUContextScope": "private",                        Which context to use, private or corporate accounts
-  "PSUCorporateId": "",                                If corporate context, your corporate id with the bank is given here
-  "UseProductionEnvironment": false,                   If true, production environment is used, otherwise sandbox
-  "ProductionClientCertificateFile": "acme.com.pfx",   If production environment, your client certificate filename
-  "PSUIPAddress": "192.168.0.1",                       The PSU IP address to present to the bank
-  "PSUUserAgent": "mozilla/5.0"                        The PSU user agent to present to the bank
+  "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",  //An API client id created in our Developer Portal
+  "RedirectURI": "https://acme.com/",                  //A redirect URI registered with the client in Developer Portal
+  "PSUContextScope": "private",                        //Which context to use, private or corporate accounts
+  "PSUCorporateId": "",                                //If corporate context, your corporate id with the bank is given here
+  "UseProductionEnvironment": false,                   //If true, production environment is used, otherwise sandbox
+  "ProductionClientCertificateFile": "acme.com.pfx",   //If production environment, your client certificate filename
+  "PSUIPAddress": "192.168.0.1",                       //The PSU IP address to present to the bank
+  "PSUUserAgent": "mozilla/5.0"                        //The PSU user agent to present to the bank
 }
 ```
 
