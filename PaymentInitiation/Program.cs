@@ -33,6 +33,9 @@ namespace PaymentInitiation
     {
         private const string QRCodeImageFilename = "QRCode.png";
 
+        //
+        // Configuration settings
+        //
         public class Settings
         {
             public string ClientId { get; set; }
@@ -43,6 +46,9 @@ namespace PaymentInitiation
             public string PSUUserAgent { get; set; }
         }
 
+        //
+        // Payment context
+        //
         public class Payment
         {
             public string BicFi { get; }
@@ -95,18 +101,30 @@ namespace PaymentInitiation
 
             Init(paymentName);
 
+            //
+            // Get an API access token from auth server with the scope needed
+            //
             _token = await GetToken(_clientId, _clientSecret, _paymentinitiationScope);
             Console.WriteLine($"token: {_token}");
             Console.WriteLine();
 
+            //
+            // Create the payment
+            //
             _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody);
             Console.WriteLine($"paymentId: {_payment.PaymentId}");
             Console.WriteLine();
 
+            //
+            // Create a payment authorization object to be used for authorizing the payment with the end user
+            //
             _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
             Console.WriteLine($"authId: {_payment.PaymentAuthId}");
             Console.WriteLine();
 
+            //
+            // Start the payment authorization process with the end user
+            //
             (_payment.ScaMethod, _payment.ScaData) = await UpdatePSUDataForPaymentInitiation(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
             Console.WriteLine($"scaMethod: {_payment.ScaMethod}");
             Console.WriteLine($"data: {_payment.ScaData}");
@@ -115,10 +133,16 @@ namespace PaymentInitiation
             bool scaSuccess;
             if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT || _payment.ScaMethod == SCAMethod.REDIRECT)
             {
+                //
+                // Bank uses a redirect flow for Strong Customer Authentication
+                //
                 scaSuccess = await SCAFlowRedirect(_payment, "MyState");
             }
             else if (_payment.ScaMethod == SCAMethod.DECOUPLED)
             {
+                //
+                // Bank uses a decoupled flow for Strong Customer Authentication
+                //
                 scaSuccess = await SCAFlowDecoupled(_payment);
             }
             else
@@ -126,25 +150,28 @@ namespace PaymentInitiation
                 throw new Exception($"ERROR: unknown SCA method {_payment.ScaMethod}");
             }
 
-            if (scaSuccess)
-            {
-                Console.WriteLine("SCA completed successfully");
-                Console.WriteLine();
-
-                string transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
-                Console.WriteLine($"transactionStatus: {transactionStatus}");
-                Console.WriteLine();
-                while (transactionStatus.Equals("RCVD"))
-                {
-                    await Task.Delay(2000);
-                    transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
-                    Console.WriteLine($"transactionStatus: {transactionStatus}");
-                    Console.WriteLine();
-                }
-            }
-            else
+            if (!scaSuccess)
             {
                 Console.WriteLine("SCA failed");
+                Console.WriteLine();
+                return;
+            }
+
+            Console.WriteLine("SCA completed successfully");
+            Console.WriteLine();
+
+            //
+            // Check the status of the payment, for this example until it changes from the initial
+            // "RCVD" status to anything else
+            //
+            string transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+            Console.WriteLine($"transactionStatus: {transactionStatus}");
+            Console.WriteLine();
+            while (transactionStatus.Equals("RCVD"))
+            {
+                await Task.Delay(2000);
+                transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+                Console.WriteLine($"transactionStatus: {transactionStatus}");
                 Console.WriteLine();
             }
         }
@@ -156,6 +183,9 @@ namespace PaymentInitiation
 
         static void Init(string paymentName)
         {
+            //
+            // Read configuration
+            //
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json", false, false);
             IConfigurationRoot config = configurationBuilder.Build();
@@ -166,9 +196,11 @@ namespace PaymentInitiation
             _psuIPAddress = settings.PSUIPAddress;
             _psuUserAgent = settings.PSUUserAgent;
 
+            //
+            // Read payment configuration and pick the chosen payment to process 
+            //
             var jsonString = File.ReadAllText("payments.json");
             dynamic payments = JsonConvert.DeserializeObject<dynamic>(jsonString);
-
             foreach (var item in payments)
             {
                 string name = item.Name;
@@ -188,12 +220,18 @@ namespace PaymentInitiation
                 throw new Exception($"ERROR: payment {paymentName} not found");
             }
 
+            //
+            // Prompt for client secret
+            //
             Console.Write("Enter your Client Secret: ");
             _clientSecret = ConsoleReadPassword();
             Console.WriteLine();
 
             _apiClientHandler = new HttpClientHandler();
 
+            //
+            // Set up for different environments
+            //
             if (settings.UseProductionEnvironment)
             {
                 Console.WriteLine("Using production");
@@ -245,11 +283,14 @@ namespace PaymentInitiation
             }
         }
 
-        private static string GenerateBankIdURL(string autostartToken, string redirectUri)
+        private static string FormatBankIdURL(string autostartToken, string redirectUri)
         {
             return $"bankid:///?autostarttoken={autostartToken}&redirect={redirectUri}";
         }
 
+        //
+        // Generates a QR-code image from a character string and opens it with default application
+        //
         private static void DisplayQRCode(string url)
         {
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -263,6 +304,9 @@ namespace PaymentInitiation
             OpenBrowser(qrCodeUrl);
         }
 
+        //
+        // Will poll the SCA status indefinitely until status is either "finalised" or "failed"
+        //
         private static async Task<bool> PollSCAStatus(Payment payment, int millisecondsDelay)
         {
             string scaStatus = await GetPaymentInitiationAuthorisationSCAStatus(_payment.BicFi, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId);
@@ -281,17 +325,28 @@ namespace PaymentInitiation
             return true;
         }
 
+        //
+        // Starts a redirect flow for SCA by opening SCA URL in default browser (for end user to authenticate),
+        // then prompts for authorisation code returned in final redirect query parameter "code".
+        // (prompting for this is because of the simplicity of this example application that is not implementing a http server)
+        //
         private static async Task<bool> SCAFlowRedirect(Payment payment, string state)
         {
+            //
+            // Fill in the details on the given redirect URL template
+            //
             string url = _payment.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
             Console.WriteLine($"URL: {url}");
             Console.WriteLine();
 
             OpenBrowser(url);
 
+            //
+            // If flow is OAuthRedirect, authorisation code needs to be activated
+            //
             if (_payment.ScaMethod == SCAMethod.OAUTH_REDIRECT)
             {
-                Console.Write("Enter authentication code returned by redirect query param: ");
+                Console.Write("Enter authorisation code returned by redirect query param: ");
                 string authCode = Console.ReadLine();
                 Console.WriteLine();
 
@@ -301,17 +356,27 @@ namespace PaymentInitiation
                     return false;
             }
 
+            //
+            // Wait for a final SCA status
+            //
             return await PollSCAStatus(payment, 2000);
         }
 
+        //
+        // Handles a decoupled flow by formatting a BankId URL, presenting it as an QR-code to be scanned
+        // with BankId, then polling for a final SCA status of the authentication/auhorisation
+        //
         private static async Task<bool> SCAFlowDecoupled(Payment payment)
         {
-            string bankIdUrl = GenerateBankIdURL(_payment.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
+            string bankIdUrl = FormatBankIdURL(_payment.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
             DisplayQRCode(bankIdUrl);
 
             return await PollSCAStatus(payment, 2000);
         }
 
+        //
+        // Create a http client with the basic common attributes set for a request to auth server
+        //
         private static HttpClient CreateGenericAuthClient()
         {
             var authClient = new HttpClient();
@@ -321,6 +386,9 @@ namespace PaymentInitiation
             return authClient;
         }
 
+        //
+        // Create a http client with the basic common attributes set for a request to API:s
+        //
         private static HttpClient CreateGenericApiClient(string bicFi)
         {
             var apiClient = new HttpClient(_apiClientHandler);
