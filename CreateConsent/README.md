@@ -53,4 +53,4 @@ appsettings.json
 ```
 dotnet run <BicFi>
 ```
-Where `BicFi` is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS, etc.)
+Where `BicFi` is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS etc.)
