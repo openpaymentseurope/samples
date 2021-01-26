@@ -235,6 +235,7 @@ namespace PaymentInitiation
             if (settings.UseProductionEnvironment)
             {
                 Console.WriteLine("Using production");
+                Console.WriteLine();
                 _authUri = "https://auth.openbankingplatform.com";
                 _apiUri = "https://api.openbankingplatform.com";
 
@@ -248,6 +249,7 @@ namespace PaymentInitiation
             else
             {
                 Console.WriteLine("Using sandbox");
+                Console.WriteLine();
                 _authUri = "https://auth.sandbox.openbankingplatform.com";
                 _apiUri = "https://api.sandbox.openbankingplatform.com";
             }
@@ -299,8 +301,6 @@ namespace PaymentInitiation
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
             qrCodeImage.Save(QRCodeImageFilename, ImageFormat.Png);
             string qrCodeUrl = "file://" + Path.GetFullPath(".") + "/" + QRCodeImageFilename;
-            Console.WriteLine($"qrCodeUrl: {qrCodeUrl}");
-            Console.WriteLine();
             OpenBrowser(qrCodeUrl);
         }
 
@@ -424,6 +424,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"statusCode: {(int)response.StatusCode}");
             Console.WriteLine($"responseBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -455,6 +456,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -477,6 +479,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -498,6 +501,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -519,6 +523,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -568,6 +573,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -588,6 +594,7 @@ namespace PaymentInitiation
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 

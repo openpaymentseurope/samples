@@ -176,6 +176,8 @@ namespace CreateConsent
             // that will list the bank accounts of the end user
             //
             string accountList = await GetAccountList(_consent.BicFi, _consent.ConsentId);
+            dynamic parsedJson = JsonConvert.DeserializeObject(accountList);
+            accountList = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
             Console.WriteLine($"accountList: {accountList}");
             Console.WriteLine();
         }
@@ -219,6 +221,7 @@ namespace CreateConsent
             if (settings.UseProductionEnvironment)
             {
                 Console.WriteLine("Using production");
+                Console.WriteLine();
                 _authUri = "https://auth.openbankingplatform.com";
                 _apiUri = "https://api.openbankingplatform.com";
 
@@ -232,6 +235,7 @@ namespace CreateConsent
             else
             {
                 Console.WriteLine("Using sandbox");
+                Console.WriteLine();
                 _authUri = "https://auth.sandbox.openbankingplatform.com";
                 _apiUri = "https://api.sandbox.openbankingplatform.com";
             }
@@ -282,8 +286,6 @@ namespace CreateConsent
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
             qrCodeImage.Save(QRCodeImageFilename, ImageFormat.Png);
             string qrCodeUrl = "file://" + Path.GetFullPath(".") + "/" + QRCodeImageFilename;
-            Console.WriteLine($"qrCodeUrl: {qrCodeUrl}");
-            Console.WriteLine();
             OpenBrowser(qrCodeUrl);
         }
 
@@ -407,6 +409,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"statusCode: {(int)response.StatusCode}");
             Console.WriteLine($"responseBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -438,6 +441,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -460,6 +464,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -481,6 +486,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -502,6 +508,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -551,6 +558,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -571,6 +579,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
@@ -592,6 +601,7 @@ namespace CreateConsent
             }
             Console.WriteLine($"resultStatusCode: {(int)response.StatusCode}");
             Console.WriteLine($"resultBody: {responseContent}");
+            Console.WriteLine();
 
             return responseContent;
         }
