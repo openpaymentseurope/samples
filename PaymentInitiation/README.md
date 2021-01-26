@@ -76,7 +76,7 @@ payments.json
 ]
 ```
 * An array of payments may be defined in the `payments.json` configuration file, where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
-* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS).
+* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS) and also our bank information page for details on what each bank provides: https://docs.openpayments.io/docs/banks/
 
 # Running
 ```
