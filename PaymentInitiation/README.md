@@ -7,11 +7,11 @@ Please note that this is a simplified implementation with a pedagogic purpose of
 
 # Prerequisites
 
-### API client credentials
+## API client credentials
 Sign-up with Open Payments Europe's Developer Portal and register an application to acquire your API client credentials (Note that you must register your application to be using the Payment Initiation (PIS) API to use it with this demo).
 https://developer.openpayments.io/
 
-### Download and install Microsoft .Net Core 
+## Download and install Microsoft .Net Core 
 https://dotnet.microsoft.com/download
 
 ## macOS specific
@@ -21,8 +21,9 @@ If you are running this demo on macOS, you need to install the graphics library 
 https://brew.sh
 
 ### Install mono-libgdiplus for QR code image generation
+In Terminal:
 ```
-> brew install mono-libgdiplus
+brew install mono-libgdiplus
 ```
 
 # Building
@@ -81,4 +82,4 @@ payments.json
 ```
 > dotnet run <payment name>
 ```
-Where <payment name> is the identifier of the payment you want to process (set in your `payments.json` file)
+Where `payment name` is the identifier of the payment you want to process (delfined in your `payments.json` file)
