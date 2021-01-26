@@ -1,5 +1,5 @@
 # Description 
-C# .NET Core example implementation of creation, authorization and use of an AIS consent for Open Payments Europe AB:s NextGen REST API:s. 
+C# .NET Core example implementation of creation, authorization and use of an AIS consent for Open Payments Europe AB:s NextGen PSD2 REST API:s. 
 
 This example demonstrates how to implement a full flow of creating and authorising a Consent that can then be used to access bank account information, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
 
@@ -7,11 +7,11 @@ Please note that this is a simplified implementation with a pedagogic purpose of
 
 # Prerequisites
 
-### API client credentials
+## API client credentials
 Sign-up with Open Payments Europe's Developer Portal and register an application to acquire your API client credentials (Note that you must register your application to be using the Account Information (AIS) API to use it with this demo).
 https://developer.openpayments.io/
 
-### Download and install Microsoft .Net Core 
+## Download and install Microsoft .Net Core 
 https://dotnet.microsoft.com/download
 
 ## macOS specific
@@ -21,13 +21,14 @@ If you are running this demo on macOS, you need to install the graphics library 
 https://brew.sh
 
 ### Install mono-libgdiplus for QR code image generation
+In Terminal:
 ```
-> brew install mono-libgdiplus
+brew install mono-libgdiplus
 ```
 
 # Building
 ```
-> dotnet build
+dotnet build
 ```
 
 # Configuration
@@ -50,6 +51,6 @@ appsettings.json
 
 # Running
 ```
-> dotnet run <BicFi>
+dotnet run <BicFi>
 ```
-Where <BicFi> is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS, etc.)
+Where `BicFi` is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS etc.)

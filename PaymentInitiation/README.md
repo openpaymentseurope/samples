@@ -1,5 +1,5 @@
 # Description 
-C# .NET Core example implementation of creation, authorization and status follow-up of PIS Payment Initiations for Open Payments Europe AB:s NextGen REST API:s. 
+C# .NET Core example implementation of creation, authorization and status follow-up of PIS Payment Initiations for Open Payments Europe AB:s NextGen PSD2 REST API:s. 
 
 This example demonstrates how to implement a full flow of creating, authorising and following up the status of a Payment Initiation, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
 
@@ -7,11 +7,11 @@ Please note that this is a simplified implementation with a pedagogic purpose of
 
 # Prerequisites
 
-### API client credentials
+## API client credentials
 Sign-up with Open Payments Europe's Developer Portal and register an application to acquire your API client credentials (Note that you must register your application to be using the Payment Initiation (PIS) API to use it with this demo).
 https://developer.openpayments.io/
 
-### Download and install Microsoft .Net Core 
+## Download and install Microsoft .Net Core 
 https://dotnet.microsoft.com/download
 
 ## macOS specific
@@ -21,13 +21,14 @@ If you are running this demo on macOS, you need to install the graphics library 
 https://brew.sh
 
 ### Install mono-libgdiplus for QR code image generation
+In Terminal:
 ```
-> brew install mono-libgdiplus
+brew install mono-libgdiplus
 ```
 
 # Building
 ```
-> dotnet build
+dotnet build
 ```
 
 # Configuration
@@ -75,10 +76,10 @@ payments.json
 ]
 ```
 * An array of payments may be defined in the `payments.json` configuration file, where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
-* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS).
+* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS) and also our bank information page for details on what each bank provides: https://docs.openpayments.io/docs/banks/
 
 # Running
 ```
-> dotnet run <payment name>
+dotnet run <payment name>
 ```
-Where <payment name> is the identifier of the payment you want to process (set in your `payments.json` file)
+Where `payment name` is the identifier of the payment you want to process (delfined in your `payments.json` file)
