@@ -5,7 +5,7 @@ API documentation: https://docs.openpayments.io
 
 Developer Portal: https://developer.openpayments.io
 
-### Aspsp/
+### [Aspsp/](Aspsp)
 Various examples of how to use the ASPSP Information API
 
 ### CreateConsent/
