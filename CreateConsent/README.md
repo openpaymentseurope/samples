@@ -1,5 +1,5 @@
 # Description 
-C# .NET Core example implementation of creation, authorization and use of an AIS consent for Open Payments Europe AB:s NextGen REST API:s. 
+C# .NET Core example implementation of creation, authorization and use of an AIS consent for Open Payments Europe AB:s NextGen PSD2 REST API:s. 
 
 This example demonstrates how to implement a full flow of creating and authorising a Consent that can then be used to access bank account information, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
 

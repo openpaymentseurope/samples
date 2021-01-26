@@ -1,5 +1,5 @@
 # Description 
-C# .NET Core example implementation of creation, authorization and status follow-up of PIS Payment Initiations for Open Payments Europe AB:s NextGen REST API:s. 
+C# .NET Core example implementation of creation, authorization and status follow-up of PIS Payment Initiations for Open Payments Europe AB:s NextGen PSD2 REST API:s. 
 
 This example demonstrates how to implement a full flow of creating, authorising and following up the status of a Payment Initiation, supporting OAuthRedirect, Redirect and Decoupled SCA approaches with the end user.
 
