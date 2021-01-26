@@ -8,8 +8,8 @@ Developer Portal: https://developer.openpayments.io
 ### [Aspsp/](Aspsp)
 Various examples of how to use the ASPSP Information API
 
-### CreateConsent/
+### [CreateConsent/](CreateConsent)
 Example of how to implement creation and authorisation of consents that can be used to retrieve account information using the Consent and AIS API:s
 
-### PaymentInitiation/
+### [PaymentInitiation/](PaymentInitiation)
 Example of how to implement creation and authorisation of payments using the PIS API
