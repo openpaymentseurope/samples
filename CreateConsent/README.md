@@ -28,7 +28,7 @@ brew install mono-libgdiplus
 
 # Building
 ```
-> dotnet build
+dotnet build
 ```
 
 # Configuration

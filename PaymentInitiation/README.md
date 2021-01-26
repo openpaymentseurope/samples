@@ -28,7 +28,7 @@ brew install mono-libgdiplus
 
 # Building
 ```
-> dotnet build
+dotnet build
 ```
 
 # Configuration
@@ -80,6 +80,6 @@ payments.json
 
 # Running
 ```
-> dotnet run <payment name>
+dotnet run <payment name>
 ```
 Where `payment name` is the identifier of the payment you want to process (delfined in your `payments.json` file)
