@@ -82,4 +82,4 @@ payments.json
 ```
 dotnet run <payment name>
 ```
-Where `payment name` is the identifier of the payment you want to process (delfined in your `payments.json` file)
+Where `payment name` is the identifier of the payment you want to process (defined in your `payments.json` file)
