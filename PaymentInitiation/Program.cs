@@ -211,7 +211,7 @@ namespace PaymentInitiation
                                            (string)item.PaymentProduct,
                                            JsonConvert.SerializeObject(item.Payment, Newtonsoft.Json.Formatting.None));
                     _paymentinitiationScope = $"{item.PSUContextScope} paymentinitiation";
-                    _psuCorporateId = item.PSUContextScope.Equals("corporate") ? item.PSUContextScope : null;
+                    _psuCorporateId = ((string)item.PSUContextScope).Equals("corporate") ? item.PSUCorporateId : null;
                     break;
                 }
             }
