@@ -39,7 +39,7 @@ appsettings.json
   "ClientSecret": "yoursupersecretpassword",          // Your client secret also from Developer Portal
   "RedirectURI": "https://acme.com/",                 // A redirect URI registered with the client in Developer Portal
   "PSUContextScope": "private",                       // Which context to use, "private" or "corporate" accounts
-  "PSUId": "198605236551",                            // SSN of person with access to the payment debtor account
+  "PSUId": "199311219639",                            // SSN of person with access to the account information
   "PSUCorporateId": "",                               // If corporate context, your corporate id with the bank is given here
   "UseProductionEnvironment": false,                  // If true, production environment is used, otherwise sandbox
   "ProductionClientCertificateFile": "acme.com.pfx",  // If production environment, your client certificate filename
