@@ -2,10 +2,11 @@
     {
         "Name": "DABASESXpriv",
         "BICFI": "DABASESX",
-        "PSUContextScope": "private",
+        "PSUId": "",
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
+        "AuthenticationMethodId": "mbid",
         "Payment": {
             "instructedAmount": {
                 "currency": "GBP",
@@ -26,10 +27,11 @@
     {
         "Name": "ESSESESSpriv",
         "BICFI": "ESSESESS",
-        "PSUContextScope": "private",
+        "PSUId": "199311219639",
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
+        "AuthenticationMethodId": "mbid",
         "Payment": {
             "instructedAmount": {
                 "currency": "SEK",
@@ -50,10 +52,11 @@
     {
         "Name": "HANDSESSpriv",
         "BICFI": "HANDSESS",
-        "PSUContextScope": "private",
+        "PSUId": "",
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
+        "AuthenticationMethodId": "mbid",
         "Payment": {
             "instructedAmount": {
                 "currency": "SEK",
@@ -75,10 +78,11 @@
     {
         "Name": "NDEASESSpriv",
         "BICFI": "NDEASESS",
-        "PSUContextScope": "private",
+        "PSUId": "",
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
+        "AuthenticationMethodId": "mbid",
         "Payment": {
             "instructedAmount": {
                 "currency": "SEK",
@@ -90,7 +94,7 @@
             },
             "creditorName": "Margit Alros",
             "creditorAccount": {
-                "iban": "SE2730000000032704620555",
+                "bban": "32704620016",
                 "currency": "SEK"
             },
             "remittanceInformationUnstructured": "My Payment"
@@ -99,10 +103,12 @@
     {
         "Name": "SWEDSESSpriv",
         "BICFI": "SWEDSESS",
-        "PSUContextScope": "private",
+        "AffiliatedASPSPId": "08999",
+        "PSUId": "199311219639",
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
+        "AuthenticationMethodId": "mbid_animated_qr_image",
         "Payment": {
             "instructedAmount": {
                 "currency": "SEK",

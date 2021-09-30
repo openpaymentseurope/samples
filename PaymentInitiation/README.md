@@ -36,6 +36,7 @@ appsettings.json
 ```json5
 {
   "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", // An API client id created in our Developer Portal
+  "ClientSecret": "yoursupersecretpassword",          // Your client secret also from Developer Portal
   "RedirectURI": "https://acme.com/",                 // A redirect URI registered with the client in Developer Portal
   "UseProductionEnvironment": false,                  // If true, production environment is used, otherwise sandbox
   "ProductionClientCertificateFile": "acme.com.pfx",  // If production environment, your client certificate filename
@@ -43,7 +44,7 @@ appsettings.json
   "PSUUserAgent": "mozilla/5.0"                       // The PSU user agent to present to the bank
 }
 ```
-* Edit the `appsettings.json` file and set your specific `ClientId` and `RedirectURI` obtained from Open Payments Developer Portal.
+* Edit the `appsettings.json` file and set your specific `ClientId`, `ClientSecret` and `RedirectURI` obtained from Open Payments Developer Portal.
 * If you are using the production environment, `UseProductionEnvironment` must be set to `true` and `ProductionClientCertificateFile` must be the filename of your production client certificate (obtained when you onboarded your company to our production environment in Developer Portal) and the certificate file must be in the project directory of this application.
 
 payments.json
@@ -53,9 +54,11 @@ payments.json
       "Name": "ESSESESSpriv",                      // Unique name that is used when selecting which payment to process when running app
       "BICFI": "ESSESESS",                         // Identifier of which bank that will be used for the payment
       "PSUContextScope": "private",                // Which context to use, "private" or "corporate" accounts
+      "PSUId": "199311219639",                     // SSN of person with access to the payment debtor account
       "PSUCorporateId": "",                        // If corporate context, your corporate id with the bank is given here
       "PaymentService": "payments",                // Payment Service to use
       "PaymentProduct": "domestic",                // Payment Product to use ("domestic","swedish-giro","sepa-credit-transfers","international")
+      "AuthenticationMethodId": "mbid",            // Which authentication method to use (options given by response from endpoint Start Payment Initiation Authorisation Process )
       "Payment": {                                 // Payment body, structure of this is free and specific to the Payment Product used
           "instructedAmount": {
               "currency": "SEK",
