@@ -36,8 +36,10 @@ appsettings.json
 ```json5
 {
   "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", // An API client id created in our Developer Portal
+  "ClientSecret": "yoursupersecretpassword",          // Your client secret also from Developer Portal
   "RedirectURI": "https://acme.com/",                 // A redirect URI registered with the client in Developer Portal
   "PSUContextScope": "private",                       // Which context to use, "private" or "corporate" accounts
+  "PSUId": "198605236551",                            // SSN of person with access to the payment debtor account
   "PSUCorporateId": "",                               // If corporate context, your corporate id with the bank is given here
   "UseProductionEnvironment": false,                  // If true, production environment is used, otherwise sandbox
   "ProductionClientCertificateFile": "acme.com.pfx",  // If production environment, your client certificate filename
@@ -45,12 +47,13 @@ appsettings.json
   "PSUUserAgent": "mozilla/5.0"                       // The PSU user agent to present to the bank
 }
 ```
-* Edit the `appsettings.json` file and set your specific `ClientId` and `RedirectURI` obtained from Open Payments Developer Portal.
+* Edit the `appsettings.json` file and set your specific `ClientId`, `ClientSecret` and `RedirectURI` obtained from Open Payments Developer Portal.
 * If you are creating consent for corporate account, you also need to set `PSUCorporateId` to be used for the specific bank (this is for most Swedish banks the company organisation number). 
 * If you are using the production environment, `UseProductionEnvironment` must be set to `true` and `ProductionClientCertificateFile` must be the filename of your production client certificate (obtained when you onboarded your company to our production environment in Developer Portal) and the certificate file must be in the project directory of this application.
 
 # Running
 ```
-dotnet run <BicFi>
+dotnet run <BicFi> [<AffiliatedASPSPId>]
 ```
-Where `BicFi` is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS etc.)
+Where `BicFi` is the identifier of any of the available banks in the chosen environment (e.g. ESSESESS, HANDSESS, NDESESS, SWEDSESS etc.).
+`AffiliatedASPSPId` is an additional optional identifier to point out which "bank office" to address (currently only used by SWEDSESS Sparbanker) and can be obtained from our ASPSP Information API using the `Get ASPSP Details` endpoint.
