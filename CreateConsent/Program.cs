@@ -144,7 +144,7 @@ namespace CreateConsent
             //
             // Start the consent authorization process with the end user
             //
-            string scaStatus = "";
+            string scaStatus;
             (_consent.ScaMethod, scaStatus, _consent.ScaData) = await UpdatePSUDataForConsent(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId, _consent.ConsentAuthId, authMethodId);
             Console.WriteLine($"scaMethod: {_consent.ScaMethod}");
             Console.WriteLine($"data: {_consent.ScaData}");
