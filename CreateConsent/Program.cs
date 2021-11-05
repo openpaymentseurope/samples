@@ -643,17 +643,16 @@ namespace CreateConsent
             }
             else if (scaApproach.Equals("DECOUPLED"))
             {
+                method = SCAMethod.DECOUPLED;
                 try
                 {
                     scaData.Token = responseBody.challengeData.data[0];
-                    method = SCAMethod.DECOUPLED;
                 }
                 catch (RuntimeBinderException)
                 {
                     try
                     {
                         scaData.Image = responseBody.challengeData.image;
-                        method = SCAMethod.DECOUPLED;
                     }
                     catch (RuntimeBinderException)
                     {
