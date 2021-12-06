@@ -4,7 +4,7 @@
 //
 // Open Banking Platform - Consent / Account Information Service
 // 
-// Create Consent example application
+// Create Consent / AIS example 
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -21,7 +21,6 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Security.Cryptography.X509Certificates;
 using System.Drawing;
-using System.Drawing.Imaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
@@ -31,7 +30,7 @@ namespace CreateConsent
 {
     class Program
     {
-        private const string QRCodeImageFilename = "QRCode.png";
+        private const string QRCodeHtmlFilename = "QRCode.html";
 
         //
         // Configuration settings
@@ -39,8 +38,10 @@ namespace CreateConsent
         public class Settings
         {
             public string ClientId { get; set; }
+            public string ClientSecret { get; set; }
             public string RedirectURI { get; set; }
             public string PSUContextScope { get; set; }
+            public string PSUId { get; set; }
             public string PSUCorporateId { get; set; }
             public bool UseProductionEnvironment { get; set; }
             public string ProductionClientCertificateFile { get; set; }
@@ -54,15 +55,24 @@ namespace CreateConsent
         public class Consent
         {
             public string BicFi { get; }
+            public string AffiliatedASPSPId { get; }
             public string ConsentId { get; set; }
             public string ConsentAuthId { get; set; }
             public SCAMethod ScaMethod { get; set; }
-            public string ScaData { get; set; }
+            public SCAData ScaData { get; set; }
 
-            public Consent(string bicFi)
+            public Consent(string bicFi, string affiliatedASPSPId)
             {
                 this.BicFi = bicFi;
+                this.AffiliatedASPSPId = affiliatedASPSPId;
             }
+        }
+
+        public class SCAData
+        {
+            public string RedirectUri { get; set; }
+            public string Token { get; set; }
+            public string Image { get; set; }
         }
 
         public enum SCAMethod
@@ -73,34 +83,33 @@ namespace CreateConsent
             DECOUPLED
         }
 
-        private static String _authUri;
-        private static String _apiUri;
+        private static String _authBaseUri;
+        private static String _apiBaseUri;
         private static HttpClientHandler _apiClientHandler;
+        private static Settings _settings;
         private static string _accountinformationScope;
-        private static string _psuIPAddress;
-        private static string _psuUserAgent;
-        private static string _psuCorporateId;
-        private static string _clientId;
-        private static string _clientSecret;
-        private static string _redirectUri;
         private static string _token;
         private static Consent _consent;
 
         static async Task Main(string[] args)
         {
-            if (args.Length != 1)
+            if (args.Length != 1 && args.Length != 2)
             {
                 Usage();
                 return;
             }
             string bicFi = args[0];
-
-            Init(bicFi);
+            string affiliatedASPSPId = "";
+            if (args.Length == 2)
+            {
+                affiliatedASPSPId = args[1];
+            }
+            Init(bicFi, affiliatedASPSPId);
 
             //
             // Get an API access token from auth server with the scope needed
             //
-            _token = await GetToken(_clientId, _clientSecret, _accountinformationScope);
+            _token = await GetToken(_settings.ClientId, _settings.ClientSecret, _accountinformationScope);
             Console.WriteLine($"token: {_token}");
             Console.WriteLine();
 
@@ -108,21 +117,35 @@ namespace CreateConsent
             // Create a consent valid for 1 day
             //
             DateTime validUntil = DateTime.Now.AddDays(1);
-            _consent.ConsentId = await CreateConsent(_consent.BicFi, validUntil);
+            _consent.ConsentId = await CreateConsent(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUCorporateId, _consent.AffiliatedASPSPId, validUntil);
             Console.WriteLine($"consentId: {_consent.ConsentId}");
             Console.WriteLine();
 
             //
             // Create a consent authorization object to be used for authorizing the consent with the end user
             //
-            _consent.ConsentAuthId = await StartConsentAuthorisationProcess(_consent.BicFi, _consent.ConsentId);
+            List<string> authMethodIds = null;
+            (_consent.ConsentAuthId, authMethodIds) = await StartConsentAuthorisationProcess(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             Console.WriteLine($"authId: {_consent.ConsentAuthId}");
             Console.WriteLine();
+
+            string authMethodId = authMethodIds.FirstOrDefault(s => s.Equals("mbid_animated_qr_image"));
+            if (authMethodId == null)
+                authMethodId = "mbid";
+
+            //
+            // Temporary special logic for SWEDSESS until "mbid_animated_qr_image" method is released
+            //
+            if (_consent.BicFi.Equals("SWEDSESS"))
+                authMethodId = "mbid_animated_qr_image";
+
+            Console.WriteLine($"using auth method: {authMethodId}");
 
             //
             // Start the consent authorization process with the end user
             //
-            (_consent.ScaMethod, _consent.ScaData) = await UpdatePSUDataForConsent(_consent.BicFi, _consent.ConsentId, _consent.ConsentAuthId);
+            string scaStatus;
+            (_consent.ScaMethod, scaStatus, _consent.ScaData) = await UpdatePSUDataForConsent(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId, _consent.ConsentAuthId, authMethodId);
             Console.WriteLine($"scaMethod: {_consent.ScaMethod}");
             Console.WriteLine($"data: {_consent.ScaData}");
             Console.WriteLine();
@@ -133,14 +156,14 @@ namespace CreateConsent
                 //
                 // Bank uses a redirect flow for Strong Customer Authentication
                 //
-                scaSuccess = await SCAFlowRedirect(_consent, "MyState");
+                scaSuccess = await SCAFlowRedirect(_consent, scaStatus, "MyState");
             }
             else if (_consent.ScaMethod == SCAMethod.DECOUPLED)
             {
                 //
                 // Bank uses a decoupled flow for Strong Customer Authentication
                 //
-                scaSuccess = await SCAFlowDecoupled(_consent);
+                scaSuccess = await SCAFlowDecoupled(_consent, scaStatus);
             }
             else
             {
@@ -160,7 +183,7 @@ namespace CreateConsent
             //
             // Check the status of the consent, which should be "valid" after a successful SCA 
             //
-            string consentStatus = await GetConsentStatus(_consent.BicFi, _consent.ConsentId);
+            string consentStatus = await GetConsentStatus(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             Console.WriteLine($"consentStatus: {consentStatus}");
             Console.WriteLine();
 
@@ -175,7 +198,7 @@ namespace CreateConsent
             // Use the valid consent to call AIS service "Get Account List"
             // that will list the bank accounts of the end user
             //
-            string accountList = await GetAccountList(_consent.BicFi, _consent.ConsentId);
+            string accountList = await GetAccountList(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             dynamic parsedJson = JsonConvert.DeserializeObject(accountList);
             accountList = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
             Console.WriteLine($"accountList: {accountList}");
@@ -184,10 +207,10 @@ namespace CreateConsent
 
         static void Usage()
         {
-            Console.WriteLine("Usage: CreateConsent <BicFi>");
+            Console.WriteLine("Usage: CreateConsent <BicFi> [<AffiliatedASPSPId>]");
         }
 
-        static void Init(string bicFi)
+        static void Init(string bicFi, string affiliatedASPSPId)
         {
             //
             // Read configuration
@@ -195,49 +218,37 @@ namespace CreateConsent
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddJsonFile("appsettings.json", false, false);
             IConfigurationRoot config = configurationBuilder.Build();
-            var settings = config.Get<Settings>();
+            _settings = config.Get<Settings>();
 
-            _clientId = settings.ClientId;
-            _redirectUri = settings.RedirectURI;
-            _accountinformationScope = $"{settings.PSUContextScope} accountinformation";
-            _psuCorporateId = settings.PSUContextScope.Equals("corporate") ? settings.PSUCorporateId : null;
-            _psuIPAddress = settings.PSUIPAddress;
-            _psuUserAgent = settings.PSUUserAgent;
+            _accountinformationScope = $"{_settings.PSUContextScope} accountinformation";
 
-            _consent = new Consent(bicFi);
-
-            //
-            // Prompt for client secret
-            //
-            Console.Write("Enter your Client Secret: ");
-            _clientSecret = ConsoleReadPassword();
-            Console.WriteLine();
+            _consent = new Consent(bicFi, affiliatedASPSPId);
 
             _apiClientHandler = new HttpClientHandler();
 
             //
             // Set up for different environments
             //
-            if (settings.UseProductionEnvironment)
+            if (_settings.UseProductionEnvironment)
             {
                 Console.WriteLine("Using production");
                 Console.WriteLine();
-                _authUri = "https://auth.openbankingplatform.com";
-                _apiUri = "https://api.openbankingplatform.com";
+                _authBaseUri = "https://auth.openbankingplatform.com";
+                _apiBaseUri = "https://api.openbankingplatform.com";
 
                 Console.Write("Enter Certificate Password: ");
                 string certPassword = ConsoleReadPassword();
                 Console.WriteLine();
 
-                X509Certificate2 certificate = new X509Certificate2(settings.ProductionClientCertificateFile, certPassword);
+                X509Certificate2 certificate = new X509Certificate2(_settings.ProductionClientCertificateFile, certPassword);
                 _apiClientHandler.ClientCertificates.Add(certificate);
             }
             else
             {
                 Console.WriteLine("Using sandbox");
                 Console.WriteLine();
-                _authUri = "https://auth.sandbox.openbankingplatform.com";
-                _apiUri = "https://api.sandbox.openbankingplatform.com";
+                _authBaseUri = "https://auth.sandbox.openbankingplatform.com";
+                _apiBaseUri = "https://api.sandbox.openbankingplatform.com";
             }
         }
 
@@ -272,42 +283,127 @@ namespace CreateConsent
 
         private static string FormatBankIdURL(string autostartToken, string redirectUri)
         {
-            return $"bankid:///?autostarttoken={autostartToken}&redirect={redirectUri}";
+            if (String.IsNullOrEmpty(redirectUri))
+            {
+                return $"https://app.bankid.com/?autostarttoken={autostartToken}&redirect=null";
+            }
+            return $"https://app.bankid.com/?autostarttoken={autostartToken}&redirect={WebUtility.UrlEncode(redirectUri)}";
         }
 
         //
-        // Generates a QR-code image from a character string and opens it with default application
+        // Generates an html file with embedded QR-code image and opens it with default application
         //
-        private static void DisplayQRCode(string url)
+        private static void DisplayQRCode(string url, string image, string title = null)
         {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
-            Bitmap qrCodeImage = qrCode.GetGraphic(20);
-            qrCodeImage.Save(QRCodeImageFilename, ImageFormat.Png);
-            string qrCodeUrl = "file://" + Path.GetFullPath(".") + "/" + QRCodeImageFilename;
+            string html = $"<html><style>h1 {{text-align: center;}} .center {{ display: block; margin-left: auto; margin-right: auto;}}</style><body><!--TITLEHTML--><!--IMGHTML--></body></html>";
+            if (!String.IsNullOrEmpty(title))
+            {
+                html = html.Replace("<!--TITLEHTML-->", $"<p><h1>{title}</h1></p>");
+            }
+
+            if (!String.IsNullOrEmpty(url))
+            {
+                QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+                var imgType = Base64QRCode.ImageType.Png;
+                Base64QRCode qrCode = new Base64QRCode(qrCodeData);
+                string qrCodeImageAsBase64 = qrCode.GetGraphic(20, Color.Black, Color.White, true, imgType);
+                html = html.Replace("<!--IMGHTML-->", $"<img alt=\"Embedded QR Code\" class=\"center\" width=\"500\" height=\"500\" src=\"data:image/{imgType.ToString().ToLower()};base64,{qrCodeImageAsBase64}\"/>");
+            }
+            else if (!String.IsNullOrEmpty(image))
+            {
+                html = html.Replace("<!--IMGHTML-->", $"<img alt=\"Embedded QR Code\" class=\"center\" width=\"500px\" height=\"500px\" src=\"{image}\"/>");
+            }
+
+            using (StreamWriter outputFile = new StreamWriter(Path.GetFullPath(".") + "/" + QRCodeHtmlFilename))
+            {
+                outputFile.WriteLine(html);
+            }
+            string qrCodeUrl = "file://" + Path.GetFullPath(".") + "/" + QRCodeHtmlFilename;
             OpenBrowser(qrCodeUrl);
         }
 
         //
-        // Will poll the SCA status indefinitely until status is either "finalised" or "failed"
+        // Will poll the SCA status indefinitely with given period until status is either "finalised", "failed" or "exempted"
         //
-        private static async Task<bool> PollSCAStatus(Consent consent, int millisecondsDelay)
+        private static async Task<bool> PollSCAStatus(Consent consent, string initialSCAStatus, int millisecondsDelay)
         {
-            string scaStatus = await GetConsentAuthorisationSCAStatus(consent.BicFi, consent.ConsentId, consent.ConsentAuthId);
+            string previousScaStatus = "";
+            string scaStatus = initialSCAStatus;
+            SCAData scaData = consent.ScaData;
+            string psuMessage = GetPSUMessage(scaStatus);
+
             Console.WriteLine($"scaStatus: {scaStatus}");
             Console.WriteLine();
-            while (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed"))
+            while (!scaStatus.Equals("finalised") && !scaStatus.Equals("failed") && !scaStatus.Equals("exempted"))
             {
-                await Task.Delay(millisecondsDelay);
-                scaStatus = await GetConsentAuthorisationSCAStatus(consent.BicFi, consent.ConsentId, consent.ConsentAuthId);
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
+
+                if (!scaStatus.Equals(previousScaStatus))
+                {
+                    if (scaStatus.Equals("started") || scaStatus.Equals("authenticationStarted"))
+                    {
+                        string bankIdUrl = FormatBankIdURL("", "");
+                        if (!String.IsNullOrEmpty(scaData.Token))
+                        {
+                            bankIdUrl = FormatBankIdURL(scaData.Token, "");
+                            DisplayQRCode(bankIdUrl, "", psuMessage);
+                        }
+                        else if (!String.IsNullOrEmpty(scaData.Image))
+                        {
+                            DisplayQRCode("", scaData.Image, psuMessage);
+                        }
+                        else
+                        {
+                            DisplayQRCode(bankIdUrl, "", psuMessage);
+                        }
+                    }
+                    previousScaStatus = scaStatus;
+                }
+                else if (!String.IsNullOrEmpty(scaData.Image))
+                {
+                    DisplayQRCode("", scaData.Image, psuMessage);
+                }
+                await Task.Delay(millisecondsDelay);
+
+                (scaStatus, scaData) = await GetConsentAuthorisationSCAStatus(consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, consent.ConsentId, consent.ConsentAuthId);
+                Console.WriteLine($"scaStatus: {scaStatus}");
+                Console.WriteLine();
+                psuMessage = GetPSUMessage(scaStatus);
             }
+            DisplayQRCode("", "", psuMessage);
             if (scaStatus.Equals("failed"))
+            {
                 return false;
+            }
 
             return true;
+        }
+
+        private static string GetPSUMessage(string scaStatus)
+        {
+            if (scaStatus.Equals("authenticationStarted"))
+            {
+                return "Please authenticate";
+            }
+            else if (scaStatus.Equals("started"))
+            {
+                return "Please sign the consent";
+            }
+            else if (scaStatus.Equals("finalised"))
+            {
+                return "SCA Finalised";
+            }
+            else if (scaStatus.Equals("exempted"))
+            {
+                return "SCA Exempted";
+            }
+            else if (scaStatus.Equals("failed"))
+            {
+                return "SCA Failed";
+            }
+            return "";
         }
 
         //
@@ -315,12 +411,12 @@ namespace CreateConsent
         // then prompts for authorisation code returned in final redirect query parameter "code".
         // (prompting for this is because of the simplicity of this example application that is not implementing a http server)
         //
-        private static async Task<bool> SCAFlowRedirect(Consent consent, string state)
+        private static async Task<bool> SCAFlowRedirect(Consent consent, string scaStatus, string state)
         {
             //
             // Fill in the details on the given redirect URL template
             //
-            string url = consent.ScaData.Replace("[CLIENT_ID]", _clientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_redirectUri)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
+            string url = consent.ScaData.RedirectUri.Replace("[CLIENT_ID]", _settings.ClientId).Replace("[TPP_REDIRECT_URI]", WebUtility.UrlEncode(_settings.RedirectURI)).Replace("[TPP_STATE]", WebUtility.UrlEncode(state));
             Console.WriteLine($"URL: {url}");
             Console.WriteLine();
 
@@ -335,7 +431,7 @@ namespace CreateConsent
                 string authCode = Console.ReadLine();
                 Console.WriteLine();
 
-                string newToken = await ActivateOAuthPaymentAuthorisation(consent.ConsentId, consent.ConsentAuthId, _clientId, _clientSecret, _redirectUri, _accountinformationScope, authCode);
+                string newToken = await ActivateOAuthConsentAuthorisation(consent.ConsentId, consent.ConsentAuthId, _settings.ClientId, _settings.ClientSecret, _settings.RedirectURI, _accountinformationScope, authCode);
                 Console.WriteLine();
                 if (String.IsNullOrEmpty(newToken))
                     return false;
@@ -344,19 +440,17 @@ namespace CreateConsent
             //
             // Wait for a final SCA status
             //
-            return await PollSCAStatus(consent, 2000);
+            return await PollSCAStatus(consent, scaStatus, 2000);
         }
+
 
         //
         // Handles a decoupled flow by formatting a BankId URL, presenting it as an QR-code to be scanned
         // with BankId, then polling for a final SCA status of the authentication/auhorisation
         //
-        private static async Task<bool> SCAFlowDecoupled(Consent consent)
+        private static async Task<bool> SCAFlowDecoupled(Consent consent, string scaStatus)
         {
-            string bankIdUrl = FormatBankIdURL(consent.ScaData, WebUtility.UrlEncode("https://openpayments.io"));
-            DisplayQRCode(bankIdUrl);
-
-            return await PollSCAStatus(consent, 2000);
+            return await PollSCAStatus(consent, scaStatus, 1000);
         }
 
         //
@@ -365,7 +459,7 @@ namespace CreateConsent
         private static HttpClient CreateGenericAuthClient()
         {
             var authClient = new HttpClient();
-            authClient.BaseAddress = new Uri(_authUri);
+            authClient.BaseAddress = new Uri(_authBaseUri);
             authClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             return authClient;
@@ -374,16 +468,21 @@ namespace CreateConsent
         //
         // Create a http client with the basic common attributes set for a request to API:s
         //
-        private static HttpClient CreateGenericApiClient(string bicFi)
+        private static HttpClient CreateGenericApiClient(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId)
         {
             var apiClient = new HttpClient(_apiClientHandler);
-            apiClient.BaseAddress = new Uri(_apiUri);
+            apiClient.BaseAddress = new Uri(_apiBaseUri);
             apiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             apiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+            var xRequestId = Guid.NewGuid().ToString();
+            Console.WriteLine($"X-Request-ID: {xRequestId}");
+            apiClient.DefaultRequestHeaders.Add("X-Request-ID", xRequestId);
             apiClient.DefaultRequestHeaders.Add("X-BicFi", bicFi);
-            apiClient.DefaultRequestHeaders.Add("PSU-IP-Address", _psuIPAddress);
-            if (!String.IsNullOrEmpty(_psuCorporateId))
-                apiClient.DefaultRequestHeaders.Add("PSU-Corporate-Id", _psuCorporateId);
+            apiClient.DefaultRequestHeaders.Add("PSU-IP-Address", psuIPAddress);
+            apiClient.DefaultRequestHeaders.Add("PSU-User-Agent", psuUserAgent);
+            apiClient.DefaultRequestHeaders.Add("TPP-Redirect-Preferred", "false");
+            if (!String.IsNullOrEmpty(psuCorporateId))
+                apiClient.DefaultRequestHeaders.Add("PSU-Corporate-Id", psuCorporateId);
 
             return apiClient;
         }
@@ -416,7 +515,7 @@ namespace CreateConsent
             return responseBody.access_token;
         }
 
-        private static async Task<string> ActivateOAuthPaymentAuthorisation(string consentId, string authId, string clientId, string clientSecret, string redirectUri, string scope, string authCode)
+        private static async Task<string> ActivateOAuthConsentAuthorisation(string consentId, string authId, string clientId, string clientSecret, string redirectUri, string scope, string authCode)
         {
             Console.WriteLine("Activate OAuth Consent Authorisation");
             var authClient = CreateGenericAuthClient();
@@ -448,12 +547,12 @@ namespace CreateConsent
             return responseBody.access_token;
         }
 
-        private static async Task<string> CreateConsent(string bicFi, DateTime validUntil)
+        private static async Task<String> CreateConsent(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string affiliatedASPSPId, DateTime validUntil)
         {
             Console.WriteLine("Create Consent");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
-            apiClient.DefaultRequestHeaders.Add("PSU-User-Agent", _psuUserAgent);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (affiliatedASPSPId != null)
+                apiClient.DefaultRequestHeaders.Add("X-AffiliatedASPSP-ID", affiliatedASPSPId);
 
             string jsonBody = "{\"access\": {  }, \"recurringIndicator\": true, \"validUntil\": \"" + validUntil.ToString("yyyy-MM-dd") + "\", \"frequencyPerDay\": 4, \"combinedServiceIndicator\": false}";
             var response = await apiClient.PostAsync("/psd2/consent/v1/consents", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -471,11 +570,12 @@ namespace CreateConsent
             return responseBody.consentId;
         }
 
-        private static async Task<string> StartConsentAuthorisationProcess(string bicFi, string consentId)
+        private static async Task<(string, List<string>)> StartConsentAuthorisationProcess(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Start Consent Authorisation Process");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             string jsonBody = "";
             var response = await apiClient.PostAsync($"/psd2/consent/v1/consents/{consentId}/authorisations", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -489,17 +589,23 @@ namespace CreateConsent
             Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
+            List<string> authMethodIds = new List<string>();
+            foreach (dynamic item in responseBody.scaMethods)
+            {
+                authMethodIds.Add(item.authenticationMethodId.ToString());
+            }
 
-            return responseBody.authorisationId;
+            return (responseBody.authorisationId, authMethodIds);
         }
 
-        private static async Task<(SCAMethod, string)> UpdatePSUDataForConsent(string bicFi, string consentId, string authId)
+        private static async Task<(SCAMethod, string, SCAData)> UpdatePSUDataForConsent(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId, string authId, string authenticationMethodId)
         {
             Console.WriteLine("Update PSU Data For Consent");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
-            string jsonBody = "{\"authenticationMethodId\": \"mbid\"}";
+            string jsonBody = $"{{\"authenticationMethodId\": \"{authenticationMethodId}\"}}";
             var response = await apiClient.PutAsync($"/psd2/consent/v1/consents/{consentId}/authorisations/{authId}", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
             string responseContent = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
@@ -512,7 +618,9 @@ namespace CreateConsent
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
 
-            string data = "";
+            string scaStatus = responseBody.scaStatus;
+
+            SCAData scaData = new SCAData();
             IEnumerable<string> headerValues = response.Headers.GetValues("aspsp-sca-approach");
             string scaApproach = headerValues.FirstOrDefault();
             SCAMethod method = SCAMethod.UNDEFINED;
@@ -520,14 +628,14 @@ namespace CreateConsent
             {
                 try
                 {
-                    data = responseBody._links.scaOAuth.href;
+                    scaData.RedirectUri = responseBody._links.scaOAuth.href;
                     method = SCAMethod.OAUTH_REDIRECT;
                 }
                 catch (RuntimeBinderException)
                 {
                     try
                     {
-                        data = responseBody._links.scaRedirect.href;
+                        scaData.RedirectUri = responseBody._links.scaRedirect.href;
                         method = SCAMethod.REDIRECT;
                     }
                     catch (RuntimeBinderException)
@@ -537,18 +645,31 @@ namespace CreateConsent
             }
             else if (scaApproach.Equals("DECOUPLED"))
             {
-                data = responseBody.challengeData.data[0];
                 method = SCAMethod.DECOUPLED;
+                try
+                {
+                    scaData.Token = responseBody.challengeData.data[0];
+                }
+                catch (RuntimeBinderException)
+                {
+                    try
+                    {
+                        scaData.Image = responseBody.challengeData.image;
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                    }
+                }
             }
-
-            return (method, data);
+            return (method, scaStatus, scaData);
         }
 
-        private static async Task<string> GetConsentAuthorisationSCAStatus(string bicFi, string consentId, string authId)
+        private static async Task<(string, SCAData)> GetConsentAuthorisationSCAStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId, string authId)
         {
             Console.WriteLine("Get Consent Authorisation SCA Status");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync($"/psd2/consent/v1/consents/{consentId}/authorisations/{authId}");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -561,15 +682,24 @@ namespace CreateConsent
             Console.WriteLine();
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
-
-            return responseBody.scaStatus;
+            SCAData scaData = new SCAData();
+            if (responseBody.challengeData != null && responseBody.challengeData.Data != null)
+            {
+                scaData.Token = responseBody.challengeData.Data;
+            }
+            else if (responseBody.challengeData != null && responseBody.challengeData.image != null)
+            {
+                scaData.Image = responseBody.challengeData.image;
+            }
+            return (responseBody.scaStatus, scaData);
         }
 
-        private static async Task<string> GetConsentStatus(string bicFi, string consentId)
+        private static async Task<String> GetConsentStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Get Consent Status");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync($"/psd2/consent/v1/consents/{consentId}/status");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -586,12 +716,13 @@ namespace CreateConsent
             return responseBody.consentStatus;
         }
 
-        private static async Task<string> GetAccountList(string bicFi, string consentId)
+        private static async Task<String> GetAccountList(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Get Account List");
-            var apiClient = CreateGenericApiClient(bicFi);
-            apiClient.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
             apiClient.DefaultRequestHeaders.Add("Consent-ID", consentId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync("/psd2/accountinformation/v1/accounts?withBalance=true");
             string responseContent = await response.Content.ReadAsStringAsync();

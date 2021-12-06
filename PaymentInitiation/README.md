@@ -36,6 +36,7 @@ appsettings.json
 ```json5
 {
   "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", // An API client id created in our Developer Portal
+  "ClientSecret": "yoursupersecretpassword",          // Your client secret also from Developer Portal
   "RedirectURI": "https://acme.com/",                 // A redirect URI registered with the client in Developer Portal
   "UseProductionEnvironment": false,                  // If true, production environment is used, otherwise sandbox
   "ProductionClientCertificateFile": "acme.com.pfx",  // If production environment, your client certificate filename
@@ -43,7 +44,7 @@ appsettings.json
   "PSUUserAgent": "mozilla/5.0"                       // The PSU user agent to present to the bank
 }
 ```
-* Edit the `appsettings.json` file and set your specific `ClientId` and `RedirectURI` obtained from Open Payments Developer Portal.
+* Edit the `appsettings.json` file and set your specific `ClientId`, `ClientSecret` and `RedirectURI` obtained from Open Payments Developer Portal.
 * If you are using the production environment, `UseProductionEnvironment` must be set to `true` and `ProductionClientCertificateFile` must be the filename of your production client certificate (obtained when you onboarded your company to our production environment in Developer Portal) and the certificate file must be in the project directory of this application.
 
 payments.json
@@ -53,9 +54,11 @@ payments.json
       "Name": "ESSESESSpriv",                      // Unique name that is used when selecting which payment to process when running app
       "BICFI": "ESSESESS",                         // Identifier of which bank that will be used for the payment
       "PSUContextScope": "private",                // Which context to use, "private" or "corporate" accounts
+      "PSUId": "199311219639",                     // SSN of person with access to the payment debtor account
       "PSUCorporateId": "",                        // If corporate context, your corporate id with the bank is given here
       "PaymentService": "payments",                // Payment Service to use
       "PaymentProduct": "domestic",                // Payment Product to use ("domestic","swedish-giro","sepa-credit-transfers","international")
+      "AuthenticationMethodId": "mbid",            // Which authentication method to use (options given by response from endpoint Start Payment Initiation Authorisation Process )
       "Payment": {                                 // Payment body, structure of this is free and specific to the Payment Product used
           "instructedAmount": {
               "currency": "SEK",
@@ -76,7 +79,7 @@ payments.json
 ]
 ```
 * An array of payments may be defined in the `payments.json` configuration file, where each payment is given a unique name that can be used to select which payment to process when running the application (`payments.json` comes pre-configured with private accounts domestic payment definititions for the banks in our sandbox environment).
-* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS) and also our bank information page for details on what each bank provides: https://docs.openpayments.io/docs/banks/
+* When defining new payment entries, please refer to our PIS REST API reference documentation for details on payment services, payment products and payment body structures to use: https://docs.openpayments.io/en/openpayments-NextGenPSD2-1.3.3.html#tag/Payment-Initiation-Service-(PIS) and also our bank information page for details on what each bank provides: https://docs.openpayments.io/docs/banks
 
 # Running
 ```
