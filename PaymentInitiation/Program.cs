@@ -135,7 +135,7 @@ namespace PaymentInitiation
             //
             // Start the payment authorization process with the end user
             //
-            string scaStatus = "";
+            string scaStatus;
             (_payment.ScaMethod, scaStatus, _payment.ScaData) = await UpdatePSUDataForPaymentInitiation(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUId, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId, _payment.PaymentAuthId, _payment.AuthenticationMethodId);
             Console.WriteLine($"scaMethod: {_payment.ScaMethod}");
             Console.WriteLine($"data: {_payment.ScaData}");
@@ -180,7 +180,7 @@ namespace PaymentInitiation
             Console.WriteLine();
             while (transactionStatus.Equals("RCVD"))
             {
-                await Task.Delay(100);
+                await Task.Delay(1000);
                 transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
                 Console.WriteLine($"transactionStatus: {transactionStatus}");
                 Console.WriteLine();
