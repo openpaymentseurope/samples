@@ -125,7 +125,7 @@ namespace CreateConsent
             // Create a consent authorization object to be used for authorizing the consent with the end user
             //
             List<string> authMethodIds = null;
-            (_consent.ConsentAuthId, authMethodIds) = await StartConsentAuthorisationProcess(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUCorporateId, _consent.ConsentId);
+            (_consent.ConsentAuthId, authMethodIds) = await StartConsentAuthorisationProcess(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             Console.WriteLine($"authId: {_consent.ConsentAuthId}");
             Console.WriteLine();
 
@@ -183,7 +183,7 @@ namespace CreateConsent
             //
             // Check the status of the consent, which should be "valid" after a successful SCA 
             //
-            string consentStatus = await GetConsentStatus(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUCorporateId, _consent.ConsentId);
+            string consentStatus = await GetConsentStatus(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             Console.WriteLine($"consentStatus: {consentStatus}");
             Console.WriteLine();
 
@@ -198,7 +198,7 @@ namespace CreateConsent
             // Use the valid consent to call AIS service "Get Account List"
             // that will list the bank accounts of the end user
             //
-            string accountList = await GetAccountList(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUCorporateId, _consent.ConsentId);
+            string accountList = await GetAccountList(_consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, _consent.ConsentId);
             dynamic parsedJson = JsonConvert.DeserializeObject(accountList);
             accountList = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
             Console.WriteLine($"accountList: {accountList}");
@@ -367,7 +367,7 @@ namespace CreateConsent
                 }
                 await Task.Delay(millisecondsDelay);
 
-                (scaStatus, scaData) = await GetConsentAuthorisationSCAStatus(consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUCorporateId, consent.ConsentId, consent.ConsentAuthId);
+                (scaStatus, scaData) = await GetConsentAuthorisationSCAStatus(consent.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _settings.PSUId, _settings.PSUCorporateId, consent.ConsentId, consent.ConsentAuthId);
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
                 psuMessage = GetPSUMessage(scaStatus);
@@ -570,10 +570,12 @@ namespace CreateConsent
             return responseBody.consentId;
         }
 
-        private static async Task<(string, List<string>)> StartConsentAuthorisationProcess(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string consentId)
+        private static async Task<(string, List<string>)> StartConsentAuthorisationProcess(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Start Consent Authorisation Process");
             var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             string jsonBody = "";
             var response = await apiClient.PostAsync($"/psd2/consent/v1/consents/{consentId}/authorisations", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -662,10 +664,12 @@ namespace CreateConsent
             return (method, scaStatus, scaData);
         }
 
-        private static async Task<(string, SCAData)> GetConsentAuthorisationSCAStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string consentId, string authId)
+        private static async Task<(string, SCAData)> GetConsentAuthorisationSCAStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId, string authId)
         {
             Console.WriteLine("Get Consent Authorisation SCA Status");
             var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync($"/psd2/consent/v1/consents/{consentId}/authorisations/{authId}");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -690,10 +694,12 @@ namespace CreateConsent
             return (responseBody.scaStatus, scaData);
         }
 
-        private static async Task<String> GetConsentStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string consentId)
+        private static async Task<String> GetConsentStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Get Consent Status");
             var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync($"/psd2/consent/v1/consents/{consentId}/status");
             string responseContent = await response.Content.ReadAsStringAsync();
@@ -710,11 +716,13 @@ namespace CreateConsent
             return responseBody.consentStatus;
         }
 
-        private static async Task<String> GetAccountList(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string consentId)
+        private static async Task<String> GetAccountList(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string consentId)
         {
             Console.WriteLine("Get Account List");
             var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
             apiClient.DefaultRequestHeaders.Add("Consent-ID", consentId);
+            if (!String.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
 
             var response = await apiClient.GetAsync("/psd2/accountinformation/v1/accounts?withBalance=true");
             string responseContent = await response.Content.ReadAsStringAsync();
