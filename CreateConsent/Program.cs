@@ -683,9 +683,9 @@ namespace CreateConsent
 
             dynamic responseBody = JsonConvert.DeserializeObject<dynamic>(responseContent);
             SCAData scaData = new SCAData();
-            if (responseBody.challengeData != null && responseBody.challengeData.Data != null)
+            if (responseBody.challengeData != null && responseBody.challengeData.data != null)
             {
-                scaData.Token = responseBody.challengeData.Data;
+                scaData.Token = responseBody.challengeData.data[0];
             }
             else if (responseBody.challengeData != null && responseBody.challengeData.image != null)
             {
