@@ -17,8 +17,9 @@ namespace ConsoleClientCityList
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             var response = await client.GetAsync(uri);
             var json = await response.Content.ReadAsStringAsync();
+            var formattedJson = json.FormatAsIndentedJson();
             
-            Console.WriteLine(json);
+            Console.WriteLine(formattedJson);
         }
 
         private static async Task<string> GetToken()
