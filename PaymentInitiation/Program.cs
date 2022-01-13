@@ -255,7 +255,7 @@ namespace PaymentInitiation
                     break;
                 }
             }
-            if (_payment.PaymentBody == null)
+            if (_payment?.PaymentBody == null)
             {
                 throw new Exception($"ERROR: payment {paymentName} not found");
             }
