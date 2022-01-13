@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////
 //
-// Open Payments Europe AB 2021
+// Open Payments Europe AB 2022
 //
 // Open Banking Platform - Consent / Account Information Service
 // 
@@ -63,8 +63,8 @@ namespace CreateConsent
 
             public Consent(string bicFi, string affiliatedASPSPId)
             {
-                this.BicFi = bicFi;
-                this.AffiliatedASPSPId = affiliatedASPSPId;
+                BicFi = bicFi;
+                AffiliatedASPSPId = affiliatedASPSPId;
             }
         }
 
@@ -547,7 +547,7 @@ namespace CreateConsent
             return responseBody.access_token;
         }
 
-        private static async Task<String> CreateConsent(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string affiliatedASPSPId, DateTime validUntil)
+        private static async Task<string> CreateConsent(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string affiliatedASPSPId, DateTime validUntil)
         {
             Console.WriteLine("Create Consent");
             var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);

@@ -1,6 +1,6 @@
 ﻿//////////////////////////////////////////////////////////////////////
 //
-// Open Payments Europe AB 2021
+// Open Payments Europe AB 2022
 //
 // Open Banking Platform - Payment Initiation Service
 // 
