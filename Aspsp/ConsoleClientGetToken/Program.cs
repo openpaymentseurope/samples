@@ -18,12 +18,12 @@ namespace ConsoleClientGetToken
                     new KeyValuePair<string, string>("client_id", Settings.ClientId),
                     new KeyValuePair<string, string>("client_secret", Settings.Secret),
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("scope", "aspspinformation"),
+                    new KeyValuePair<string, string>("scope", "private aspspinformation"),
                 }));
 
-            var json = await response.Content.ReadAsStringAsync();
-            
-            Console.WriteLine(json);
+            var token = await response.RequireToken();
+
+            Console.WriteLine(token);
         }
     }
 }

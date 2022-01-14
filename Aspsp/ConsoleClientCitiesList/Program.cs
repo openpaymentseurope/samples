@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Shared;
 
 namespace ConsoleClientCityList
@@ -18,8 +17,9 @@ namespace ConsoleClientCityList
             client.DefaultRequestHeaders.Add("X-Request-ID", Guid.NewGuid().ToString());
             var response = await client.GetAsync(uri);
             var json = await response.Content.ReadAsStringAsync();
+            var formattedJson = json.FormatAsIndentedJson();
             
-            Console.WriteLine(json);
+            Console.WriteLine(formattedJson);
         }
 
         private static async Task<string> GetToken()
@@ -32,13 +32,10 @@ namespace ConsoleClientCityList
                     new KeyValuePair<string, string>("client_id", Settings.ClientId),
                     new KeyValuePair<string, string>("client_secret", Settings.Secret),
                     new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("scope", "aspspinformation"),
+                    new KeyValuePair<string, string>("scope", "private aspspinformation"),
                 }));
 
-            var json = await response.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<dynamic>(json);
-            
-            return obj.access_token;
+            return await response.RequireToken();
         }
     }
 }
