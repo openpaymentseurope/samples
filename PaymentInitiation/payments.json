@@ -6,7 +6,7 @@
         "PSUCorporateId": "",
         "PaymentService": "payments",
         "PaymentProduct": "domestic",
-        "AuthenticationMethodId": "mbid",
+        "AuthenticationMethodId": "mbid_animated_qr_token",
         "Payment": {
             "instructedAmount": {
                 "currency": "GBP",

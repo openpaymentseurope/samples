@@ -121,14 +121,14 @@ namespace PaymentInitiation
             //
             // Create the payment
             //
-            _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody, _payment.AffiliatedASPSPId);
+            _payment.PaymentId = await CreatePaymentInitiation(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUId, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentBody, _payment.AffiliatedASPSPId);
             Console.WriteLine($"paymentId: {_payment.PaymentId}");
             Console.WriteLine();
 
             //
             // Create a payment authorization object to be used for authorizing the payment with the end user
             //
-            _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+            _payment.PaymentAuthId = await StartPaymentInitiationAuthorisationProcess(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUId, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
             Console.WriteLine($"authId: {_payment.PaymentAuthId}");
             Console.WriteLine();
 
@@ -175,13 +175,13 @@ namespace PaymentInitiation
             // Check the status of the payment, for this example until it changes from the initial
             // "RCVD" status to anything else
             //
-            var transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+            var transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUId, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
             Console.WriteLine($"transactionStatus: {transactionStatus}");
             Console.WriteLine();
             while (transactionStatus.Equals("RCVD"))
             {
                 await Task.Delay(1000);
-                transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
+                transactionStatus = await GetPaymentInitiationStatus(_payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, _payment.PSUId, _payment.PSUCorporateId, _payment.PaymentService, _payment.PaymentProduct, _payment.PaymentId);
                 Console.WriteLine($"transactionStatus: {transactionStatus}");
                 Console.WriteLine();
             }
@@ -192,7 +192,7 @@ namespace PaymentInitiation
             Console.WriteLine("Usage: PaymentInitiation <payment name>");
             Console.WriteLine();
             Console.WriteLine("Available payment names:");
-            
+
             var paymentNameList = string.Join($"{Environment.NewLine}", GetAvailablePaymentNames().Select(p => $" * {p}"));
             Console.WriteLine(paymentNameList);
         }
@@ -292,13 +292,17 @@ namespace PaymentInitiation
             }
         }
 
-        private static string FormatBankIdURL(string autostartToken, string redirectUri)
+        private static string FormatBankIdURL(string authenticationMethodId, string token, string redirectUri)
         {
+            if (authenticationMethodId.Equals("mbid_animated_qr_token"))
+            {
+                return $"{token}";
+            }
             if (string.IsNullOrEmpty(redirectUri))
             {
-                return $"https://app.bankid.com/?autostarttoken={autostartToken}&redirect=null";
+                return $"https://app.bankid.com/?autostarttoken={token}&redirect=null";
             }
-            return $"https://app.bankid.com/?autostarttoken={autostartToken}&redirect={WebUtility.UrlEncode(redirectUri)}";
+            return $"https://app.bankid.com/?autostarttoken={token}&redirect={WebUtility.UrlEncode(redirectUri)}";
         }
 
         //
@@ -340,6 +344,8 @@ namespace PaymentInitiation
         private static async Task<bool> PollSCAStatus(Payment payment, string initialSCAStatus, int millisecondsDelay)
         {
             var previousScaStatus = "";
+            var scaToken = "";
+            var previousScaToken = "";
             var scaStatus = initialSCAStatus;
             var scaData = payment.ScaData;
             var psuMessage = GetPSUMessage(scaStatus);
@@ -351,14 +357,14 @@ namespace PaymentInitiation
                 Console.WriteLine($"scaStatus: {scaStatus}");
                 Console.WriteLine();
 
-                if (!scaStatus.Equals(previousScaStatus))
+                if (!scaStatus.Equals(previousScaStatus) || (scaToken != null && !scaToken.Equals(previousScaToken)))
                 {
                     if (scaStatus.Equals("started") || scaStatus.Equals("authenticationStarted") || scaStatus.Equals("authoriseCreditorAccountStarted"))
                     {
-                        var bankIdUrl = FormatBankIdURL("", "");
-                        if (!string.IsNullOrEmpty(scaData.Token))
+                        var bankIdUrl = FormatBankIdURL(payment.AuthenticationMethodId, "", "");
+                        if (!string.IsNullOrEmpty(scaToken))
                         {
-                            bankIdUrl = FormatBankIdURL(scaData.Token, "");
+                            bankIdUrl = FormatBankIdURL(payment.AuthenticationMethodId, scaToken, "");
                             DisplayQRCode(bankIdUrl, "", psuMessage);
                         }
                         else if (!string.IsNullOrEmpty(scaData.Image))
@@ -378,8 +384,11 @@ namespace PaymentInitiation
                 }
                 await Task.Delay(millisecondsDelay);
 
-                (scaStatus, scaData) = await GetPaymentInitiationAuthorisationSCAStatus(payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, payment.PSUCorporateId, payment.PaymentService, payment.PaymentProduct, payment.PaymentId, payment.PaymentAuthId);
+                (scaStatus, scaData) = await GetPaymentInitiationAuthorisationSCAStatus(payment.BicFi, _settings.PSUIPAddress, _settings.PSUUserAgent, payment.PSUId, payment.PSUCorporateId, payment.PaymentService, payment.PaymentProduct, payment.PaymentId, payment.PaymentAuthId);
+                previousScaToken = scaToken;
+                scaToken = scaData.Token;
                 Console.WriteLine($"scaStatus: {scaStatus}");
+                Console.WriteLine($"scaStatus: {scaData.Token}");
                 Console.WriteLine();
                 psuMessage = GetPSUMessage(scaStatus);
             }
@@ -482,7 +491,7 @@ namespace PaymentInitiation
         //
         // Create a http client with the basic common attributes set for a request to API:s
         //
-        private static HttpClient CreateGenericApiClient(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId)
+        private static HttpClient CreateGenericApiClient(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId)
         {
             var apiClient = new HttpClient(_apiClientHandler);
             apiClient.BaseAddress = new Uri(_apiBaseUri);
@@ -495,6 +504,8 @@ namespace PaymentInitiation
             apiClient.DefaultRequestHeaders.Add("PSU-IP-Address", psuIPAddress);
             apiClient.DefaultRequestHeaders.Add("PSU-User-Agent", psuUserAgent);
             apiClient.DefaultRequestHeaders.Add("TPP-Redirect-Preferred", "false");
+            if (!string.IsNullOrEmpty(psuId))
+                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
             if (!string.IsNullOrEmpty(psuCorporateId))
                 apiClient.DefaultRequestHeaders.Add("PSU-Corporate-Id", psuCorporateId);
 
@@ -572,10 +583,10 @@ namespace PaymentInitiation
             return responseBody.access_token;
         }
 
-        private static async Task<string> CreatePaymentInitiation(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string paymentService, string paymentProduct, string jsonPaymentBody, string affiliatedASPSPId)
+        private static async Task<string> CreatePaymentInitiation(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string paymentService, string paymentProduct, string jsonPaymentBody, string affiliatedASPSPId)
         {
             Console.WriteLine("Create Payment Initiation");
-            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuId, psuCorporateId);
             if (affiliatedASPSPId != null)
                 apiClient.DefaultRequestHeaders.Add("X-AffiliatedASPSP-ID", affiliatedASPSPId);
 
@@ -595,10 +606,10 @@ namespace PaymentInitiation
             return responseBody.paymentId;
         }
 
-        private static async Task<string> StartPaymentInitiationAuthorisationProcess(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string paymentService, string paymentProduct, string paymentId)
+        private static async Task<string> StartPaymentInitiationAuthorisationProcess(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string paymentService, string paymentProduct, string paymentId)
         {
             Console.WriteLine("Start Payment Initiation Authorisation Process");
-            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuId, psuCorporateId);
 
             var jsonBody = "";
             var response = await apiClient.PostAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/authorisations", new StringContent(jsonBody, Encoding.UTF8, "application/json"));
@@ -619,9 +630,7 @@ namespace PaymentInitiation
         private static async Task<(SCAMethod, string, SCAData)> UpdatePSUDataForPaymentInitiation(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string paymentService, string paymentProduct, string paymentId, string authId, string authenticationMethodId)
         {
             Console.WriteLine("Update PSU Data For Payment Initiation");
-            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
-            if (!string.IsNullOrEmpty(psuId))
-                apiClient.DefaultRequestHeaders.Add("PSU-ID", psuId);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuId, psuCorporateId);
 
             var jsonBody = $"{{\"authenticationMethodId\": \"{authenticationMethodId}\"}}";
 
@@ -683,10 +692,10 @@ namespace PaymentInitiation
             return (method, scaStatus, scaData);
         }
 
-        private static async Task<(string, SCAData)> GetPaymentInitiationAuthorisationSCAStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string paymentService, string paymentProduct, string paymentId, string authId)
+        private static async Task<(string, SCAData)> GetPaymentInitiationAuthorisationSCAStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string paymentService, string paymentProduct, string paymentId, string authId)
         {
             Console.WriteLine("Get Payment Initiation Authorisation SCA Status");
-            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuId, psuCorporateId);
 
             var response = await apiClient.GetAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/authorisations/{authId}");
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -711,10 +720,10 @@ namespace PaymentInitiation
             return (responseBody.scaStatus, scaData);
         }
 
-        private static async Task<string> GetPaymentInitiationStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuCorporateId, string paymentService, string paymentProduct, string paymentId)
+        private static async Task<string> GetPaymentInitiationStatus(string bicFi, string psuIPAddress, string psuUserAgent, string psuId, string psuCorporateId, string paymentService, string paymentProduct, string paymentId)
         {
             Console.WriteLine("Get Payment Initiation Status");
-            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuCorporateId);
+            var apiClient = CreateGenericApiClient(bicFi, psuIPAddress, psuUserAgent, psuId, psuCorporateId);
 
             var response = await apiClient.GetAsync($"/psd2/paymentinitiation/v1/{paymentService}/{paymentProduct}/{paymentId}/status");
             var responseContent = await response.Content.ReadAsStringAsync();
